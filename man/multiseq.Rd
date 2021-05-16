@@ -74,7 +74,7 @@ multiseq(x = NULL, g = NULL, read.depth = NULL, reflect = FALSE,
 \item{fitted.g.intercept}{a list of \code{J} mixture of normal models fitted using \pkg{ashr} on the intercept, \code{J=log2(n)}}
 }
 \description{
-Fits the model \code{x}_{ib} \sim Poi(\lambda_{ib}) where $log(\lambda_{ib}) = \alpha_b + g_i \beta_b$.
+Fits the model \code{x}_{ib} $\sim$ Poi($\lambda_{ib}$) where $log(\lambda_{ib}) = \alpha_b + g_i \beta_b$.
 where takes a series of Poisson count signals \code{x}, with data on different samples in each row, and smooths all simultaneously using a multiscale Poisson model. Optionally, it estimates the "effect" of a covariate \code{g}.
 Estimates are all on the log intensity scale 
 Parameters \code{minobs}, \code{pseudocounts}, \code{all}, \code{center}, \code{repara}, \code{forcebin}, \code{lm.approx}, and \code{disp} are passed to \code{\link{glm.approx}}. The list \code{ashparam} specifies a list of parameters to be passed to \code{ash}.

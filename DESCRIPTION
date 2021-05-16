@@ -1,0 +1,32 @@
+Package: multiseq
+Maintainer: Ester Pantaleo <esterpantaleo@gmail.com>, Heejung Shim
+    <hjshim@gmail.com>, Zhengrong Xing <zrxing@uchicago.edu>, Matthew Stephens
+    <mstephens@uchicago.edu>
+Author: Ester Pantaleo, Heejung Shim, Zhengrong Xing, Matthew Stephens.
+Type: Package
+Title: Multiscale Sequence Analysis
+Version: 0.1.3
+Description: Multiseq implements a Bayesian multiscale method for
+    inhomogeneous Poisson processes. An inhomogeneous Poisson process is ...
+    Multiseq can be used both for smoothing and for effect size estimation
+    given a covariate. (add more...)
+    estimation ...
+SystemRequirements: the executables samtools, bigWigToWig, wigToBigWig,
+    bigWigInfo, and bedToBigBed must be in the USER's path in order
+    to be able to run functions get.counts, multiseqToTrackHub, and
+    samplesheetToTrackHub.
+License: GPL-3
+Depends:
+    R (>= 3.1.1),
+    Rcpp (>= 0.10.4),
+    ashr,
+    tools,
+    data.table
+VignetteBuilder: knitr
+Suggests:
+    knitr,
+    rhdf5
+LinkingTo: Rcpp
+URL: https://github.com/stephenslab/multiseq
+Packaged: 2014-11-19 21:18:57 UTC; epantaleo
+RoxygenNote: 5.0.1.9000

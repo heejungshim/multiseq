@@ -1,0 +1,47 @@
+Downloading and installing the package
+--------------------------------------
+
+To download the **multiseq** package from its [github repository](https://github.com/stephenslab/multiseq) click [here](https://github.com/stephenslab/multiseq/releases). 
+
+
+**Multiseq** depends on **ashr**, a package in development that you can download and install following instructions [here](https://github.com/stephens999/ashr). It also depends on [**Rcpp**](http://cran.r-project.org/web/packages/Rcpp/index.html), and therefore it requires an **R** version higher or equal to **3.0.0**. To install the package, install **ashr** and then type the following commands in R:
+
+```
+    #in orded to install rhdf5 you have to use the Bioconductor repository (tune parameter repos in install.packages)
+    biocLite("rhdf5") 
+    install.packages("path/to/multiseq.tar.gz",repos=NULL,type="source")
+```
+where you should replace "path/to/multiseq.tar.gz" with the path to the downloaded multiseq package. 
+
+
+Some optional steps (only working in UNIX/LINUX) are needed if you want to use **multiseq** on sequencing data in *hdf5*, *bam*, *bigWig*, or *bigBed* format or if you want to visualize input/output sequencing data in the UCSC Genome Browser, i.e., if you want to run functions `get.counts`, `samplesheetToTrackHub`, and `multiseqToTrackHub`.
+
+### Optional steps to:
+
+#### Read data in *hdf5*, *bam*, or *bigWig* format
+
+Function `get.counts` converts *hdf5*, *bam*, *bigWig*, and *bigBed* input files into R objects that can then be used as input to the main `multiseq` function. In order to use `get.counts`, make sure you have `awk`, `samtools`, `wigToBigWig`, and `bigWigToWig` in your path (the last two are UCSC tools). 
+
+
+If */data/tools/ucsctools/* is your path to the UCSC tools and */usr/local/bin/* is your path to `samtools` then add the following lines to your *~/.bashrc* file:
+
+    export PATH=$PATH":/data/tools/ucsctools/:/usr/local/bin/"
+
+#### Visualize results in the UCSC Genome Browser
+
+Functions `samplesheetToTrackHub` and `multiseqToTrackHub` display `multiseq` input and output in the UCSC Genome Browser. In order to use them, you need a folder that is accessible via the Internet. If */some/path* is the path to a folder that is accessible via the Internet - the "mountpoint" - and *https:some/address* is the http address of the mountpoint, you need to set the following shell environmental variables by adding the following lines to your *~/.bashrc*:
+
+    # the following lines specify the mountpoint and the http address associated with the mountpoint
+    export MOUNTPOINT_PATH="/some/path"
+    export MOUNTPOINT_HTTP_ADDRESS="https:some/address"
+
+
+#### Notes
+
+After adding new lines to your *.bashrc* for the first time, remember to either login again, or do 
+    
+```
+    source ~/.bashrc 
+```
+
+Remember that when you submit jobs to a compute cluster (e.g. using SGE's qsub), they run in "batch mode" and may not execute your *~/.bashrc*. To ensure that your jobs have the correct environmental variables set, you should be able to pass a flag to your cluster submission command (e.g. the `-V` flag to `qsub`).

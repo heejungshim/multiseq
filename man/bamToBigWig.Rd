@@ -29,4 +29,3 @@ bamToBigWig("in.bam", "chromosome_file", "chr1:3456-3456789", "out", onlyoneend=
 }
 }
 \keyword{internal}
-

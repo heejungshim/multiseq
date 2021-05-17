@@ -4,11 +4,16 @@
 \alias{multiseqToTrackHub}
 \title{Create a UCSC genome browser "Track Hub" from \code{\link{multiseq}} output.}
 \usage{
-multiseqToTrackHub(res, z.threshold = NULL, hub_name = "multiseq",
+multiseqToTrackHub(
+  res,
+  z.threshold = NULL,
+  hub_name = "multiseq",
   chrom_file = system.file("extdata", "chromosome.lengths.hg19.txt", package =
-  "multiseq"), assembly = "hg19",
+    "multiseq"),
+  assembly = "hg19",
   mountpoint = Sys.getenv("MOUNTPOINT_PATH"),
-  http_address = Sys.getenv("MOUNTPOINT_HTTP_ADDRESS"))
+  http_address = Sys.getenv("MOUNTPOINT_HTTP_ADDRESS")
+)
 }
 \arguments{
 \item{res:}{output of \code{\link{multiseq}}; \code{res$region} should be
@@ -49,4 +54,3 @@ res$region <- region
 multiseqToTrackHub(res)
 } 
 }
-

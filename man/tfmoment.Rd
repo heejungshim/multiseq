@@ -13,4 +13,3 @@ tfmoment(mu, sigma, moment, pi = NULL)
 Compute the third and fourth moments of a normal or a mixture of normals distribution.
 }
 \keyword{internal}
-

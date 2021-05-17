@@ -12,9 +12,12 @@ get.transcripts(GenePredIn, region)
 
 \item{region:}{a string specifying a genomic region}
 }
+\description{
+Extract transcript annotation (in a specified genomic region) from a file in \code{GenePred}.
+format (a standard gene annotation format).
+}
 \examples{
 GenePredIn <- file.path(path.package("multiseq"),"extdata","hg19.OAS1.refGene.part.gp")
 region     <- "chr12:113354417-113358512"
 get.transcripts(GenePredIn, region)
 }
-

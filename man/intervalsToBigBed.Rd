@@ -13,5 +13,7 @@ intervalsToBigBed(intervals, chrom_file, bigBedFile = "out.bb")
 
 \item{bigBedFile:}{output file, defaults to "out.bb"}
 }
+\description{
+Write a \code{bigBed} file given the output of \code{get.intervals}
+}
 \keyword{internal}
-

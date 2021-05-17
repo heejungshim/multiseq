@@ -6,5 +6,7 @@
 \usage{
 printGoToMessage(hub_name, assembly, hub_dir, http_address, region = NULL)
 }
+\description{
+Write a message containing instructions on how to visualize the Track Hub.
+}
 \keyword{internal}
-

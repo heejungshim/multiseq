@@ -6,5 +6,7 @@
 \usage{
 appendBigWigTrack(sampleid, bigwig_track, hub_name_string, assembly_dir)
 }
+\description{
+Write a track with.
+}
 \keyword{internal}
-

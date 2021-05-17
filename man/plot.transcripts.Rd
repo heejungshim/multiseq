@@ -4,8 +4,17 @@
 \alias{plot.transcripts}
 \title{Plot transcripts; if \code{region} is specified then plot only the specified region.}
 \usage{
-\method{plot}{transcripts}(Transcripts, region = NULL, is.xaxis = TRUE,
-  axes = F, xlim = NULL, type = NULL, cex = NULL, font.main = 1, ...)
+\method{plot}{transcripts}(
+  Transcripts,
+  region = NULL,
+  is.xaxis = TRUE,
+  axes = F,
+  xlim = NULL,
+  type = NULL,
+  cex = NULL,
+  font.main = 1,
+  ...
+)
 }
 \arguments{
 \item{Transcripts:}{output of \code{\link{get.transcripts}}}
@@ -23,4 +32,3 @@ GenePredIn  <- file.path(path.package("multiseq"),"extdata","hg19.OAS1.refGene.p
 Transcripts <- get.transcripts(GenePredIn, region)
 plot(Transcripts, region)
 }
-

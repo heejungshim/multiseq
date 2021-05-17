@@ -18,4 +18,3 @@ has a length which is a power of 2, this function adds a reflection of the origi
 the original signal to have length of a power of 2 by reflecting an appropriate number of observation points, and then reflecting the entire modified signal.
 }
 \keyword{internal}
-

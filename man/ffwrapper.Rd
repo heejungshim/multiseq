@@ -10,4 +10,3 @@ ffwrapper(mean, var, Mean, Sq, wSq, beta.tm, beta.fm, g)
 A wrapper for code in \code{compute.res} and \code{compute.res.rate}
 }
 \keyword{internal}
-

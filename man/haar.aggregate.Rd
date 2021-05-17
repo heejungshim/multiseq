@@ -16,4 +16,3 @@ a nind by (2*2^k)-2 matrix that sums up columns of x at different scales
 This function takes a matrix x of Poisson counts, nind by 2^k, and returns a nind by (2*2^k)-2 matrix that sums up columns of x at different scales. The last two columns of the aggregate are the sums of the first half of x and the sums of the second half. This function is needed to estimate the pi-s by aggregating data from multiple regions.
 }
 \keyword{internal}
-

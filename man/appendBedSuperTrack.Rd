@@ -4,8 +4,19 @@
 \alias{appendBedSuperTrack}
 \title{Write a superTrack.}
 \usage{
-appendBedSuperTrack(track, shortLabel, longLabel, tracks, shortLabels,
-  longLabels, color, priority = 2, out_file)
+appendBedSuperTrack(
+  track,
+  shortLabel,
+  longLabel,
+  tracks,
+  shortLabels,
+  longLabels,
+  color,
+  priority = 2,
+  out_file
+)
+}
+\description{
+Write a superTrack.
 }
 \keyword{internal}
-

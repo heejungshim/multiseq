@@ -20,4 +20,3 @@ an n-vector
 Reverse wavelet transform a set of probabilities in TItable format
 }
 \keyword{internal}
-

@@ -9,5 +9,7 @@ compute.res.rate(zdat, repara, baseline, w, read.depth, g = NULL)
 \value{
 a list with elements "lp.mean", "lp.var", "lpratio.mean", "lpratio.var"
 }
+\description{
+compute.res.rate
+}
 \keyword{internal}
-

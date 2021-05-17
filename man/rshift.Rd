@@ -10,4 +10,3 @@ rshift(x)
 Shift a vector right and left respectively.
 }
 \keyword{internal}
-

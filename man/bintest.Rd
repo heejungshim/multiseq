@@ -4,8 +4,15 @@
 \alias{bintest}
 \title{Returns estimates of intercept and slope as well as their SEs, given other input options. Called in glm.approx}
 \usage{
-bintest(x, g, minobs = 1, pseudocounts = 0.5, all = FALSE,
-  forcebin = FALSE, repara = FALSE)
+bintest(
+  x,
+  g,
+  minobs = 1,
+  pseudocounts = 0.5,
+  all = FALSE,
+  forcebin = FALSE,
+  repara = FALSE
+)
 }
 \arguments{
 \item{x:}{a 2n by 1 vector, with first n observations giving number of successes, and next n giving number of failures in a series of binomial experiments.}
@@ -29,4 +36,3 @@ a vector of intercept and slope estimates and their SEs
 Returns estimates of intercept and slope as well as their SEs, given other input options. Called in glm.approx
 }
 \keyword{internal}
-

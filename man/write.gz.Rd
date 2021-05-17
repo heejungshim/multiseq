@@ -24,4 +24,3 @@ res <- multiseq(x=dat$x, g=dat$g, minobs=1, lm.approx=FALSE, read.depth=dat$read
 write.gz(res, "./results.mean.sd2.gz")
 }
 }
-

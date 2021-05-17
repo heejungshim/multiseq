@@ -9,4 +9,6 @@ noExecutable(name)
 \arguments{
 \item{name:}{the name of the executable.}
 }
-
+\description{
+Check if executable is in user's PATH.
+}

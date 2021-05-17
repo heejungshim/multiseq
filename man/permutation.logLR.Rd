@@ -4,15 +4,39 @@
 \alias{permutation.logLR}
 \title{Perform permutation-based test using logLR as a test statistic.}
 \usage{
-permutation.logLR(pheno.dat, geno.dat, library.read.depth = NULL,
-  numPerm = 100, numSig = 10, eps = 0.01,
-  use.default.compute.logLR = TRUE, minobs = 1, pseudocounts = 0.5,
-  all = FALSE, center = FALSE, repara = TRUE, forcebin = FALSE,
-  lm.approx = TRUE, disp = "add", nullcheck = TRUE, pointmass = TRUE,
-  prior = "uniform", gridmult = 2, mixsd = NULL, trace = FALSE,
-  mixcompdist = "normal", lambda1 = 1, lambda2 = 0, df = NULL,
-  randomstart = FALSE, minimaloutput = FALSE, maxiter = 5000,
-  VB = FALSE, cxx = TRUE, maxlogLR = NULL)
+permutation.logLR(
+  pheno.dat,
+  geno.dat,
+  library.read.depth = NULL,
+  numPerm = 100,
+  numSig = 10,
+  eps = 0.01,
+  use.default.compute.logLR = TRUE,
+  minobs = 1,
+  pseudocounts = 0.5,
+  all = FALSE,
+  center = FALSE,
+  repara = TRUE,
+  forcebin = FALSE,
+  lm.approx = TRUE,
+  disp = "add",
+  nullcheck = TRUE,
+  pointmass = TRUE,
+  prior = "uniform",
+  gridmult = 2,
+  mixsd = NULL,
+  trace = FALSE,
+  mixcompdist = "normal",
+  lambda1 = 1,
+  lambda2 = 0,
+  df = NULL,
+  randomstart = FALSE,
+  minimaloutput = FALSE,
+  maxiter = 5000,
+  VB = FALSE,
+  cxx = TRUE,
+  maxlogLR = NULL
+)
 }
 \arguments{
 \item{pheno.dat:}{a matrix of \code{nsig} (# of samples) by \code{n} counts where \code{n} should be a power of 2}
@@ -56,4 +80,3 @@ a list of \code{most.sig.SNP.posi} (if there are multiple SNPs, returns position
 This function takes a series of Poisson count signals \code{pheno.dat}, with data on different samples in each row and genotype from multiple SNPs (or any covariate) \code{geno.dat} for each sample, and returns p-value obtained by permutation (use logLR as a test statistic). If multiple SNPs are provided, this function use max(logLR) as a test statistic.  
 Parameters \code{minobs}, \code{pseudocounts}, \code{all}, \code{center}, \code{repara}, \code{forcebin}, \code{lm.approx}, and \code{disp} are passed to \code{\link{glm.approx}}. Parameters \code{pointmass}, \code{prior}, \code{gridmult}, \code{nullcheck}, \code{mixsd}, \code{VB} are passed to \pkg{ashr}.
 }
-

@@ -4,8 +4,19 @@
 \alias{compute.dispersion}
 \title{Computes the dispersion parameter when fitting glm}
 \usage{
-compute.dispersion(p, n, ng, indexnm, forcebin, ind = NULL, ord = NULL,
-  lg = NULL, x = NULL, x.s = NULL, x.f = NULL)
+compute.dispersion(
+  p,
+  n,
+  ng,
+  indexnm,
+  forcebin,
+  ind = NULL,
+  ord = NULL,
+  lg = NULL,
+  x = NULL,
+  x.s = NULL,
+  x.f = NULL
+)
 }
 \value{
 a vector of dispersion parameters for each fitted model, or 1 if dispersion is absent
@@ -14,4 +25,3 @@ a vector of dispersion parameters for each fitted model, or 1 if dispersion is a
 Computes the dispersion parameter when fitting glm
 }
 \keyword{internal}
-

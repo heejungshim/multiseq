@@ -11,6 +11,9 @@ write.bed(intervals, bedfile)
 
 \item{bedfile:}{output \code{bed} file}
 }
+\description{
+Write effect intervals to a \code{bed} file.
+}
 \examples{
 \dontrun{
 data("dat",package="multiseq")
@@ -19,4 +22,3 @@ intervals <- get.intervals(res, region=dat$region, what="effect")
 write.bed(intervals, "out.bed")
 }
 }
-

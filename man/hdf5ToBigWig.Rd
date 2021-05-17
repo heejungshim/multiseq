@@ -27,4 +27,3 @@ hdf5ToBigWig("in.h5", "chromosome_file", "chr1:1234-1234567", "out")
 }
 }
 \keyword{internal}
-

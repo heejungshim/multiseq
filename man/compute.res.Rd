@@ -4,8 +4,15 @@
 \alias{compute.res}
 \title{Compute posterior mean and var for log(p), log(q), log(p0/p1) and log(q0/q1).}
 \usage{
-compute.res(zdat.ash.intercept, repara, baseline = NULL, w = NULL,
-  g = NULL, zdat = NULL, zdat.ash = NULL)
+compute.res(
+  zdat.ash.intercept,
+  repara,
+  baseline = NULL,
+  w = NULL,
+  g = NULL,
+  zdat = NULL,
+  zdat.ash = NULL
+)
 }
 \value{
 a list with elements "lp.mean", "lp.var", "lq.mean", "lq.var" [and "lpratio.mean", "lpratio.var", "lqratio.mean", "lqratio.var"
@@ -16,4 +23,3 @@ This function returns posterior means and variances of log(p), log(q), log(p0/p1
 is the probability of going left and q=1-p.
 }
 \keyword{internal}
-

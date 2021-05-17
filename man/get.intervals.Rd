@@ -4,8 +4,13 @@
 \alias{get.intervals}
 \title{Print intervals where \code{\link{multiseq}} found strong effect or strong peaks.}
 \usage{
-get.intervals(res, z.threshold = 2, p.threshold = 1e-09, region = NULL,
-  what = "effect")
+get.intervals(
+  res,
+  z.threshold = 2,
+  p.threshold = 1e-09,
+  region = NULL,
+  what = "effect"
+)
 }
 \arguments{
 \item{res:}{\code{\link{multiseq}} output.}
@@ -39,4 +44,3 @@ res <- multiseq(x=dat$x, g=dat$g, minobs=1, lm.approx=FALSE, read.depth=dat$read
 get.intervals(res, what="effect", region=dat$region)
 }
 }
-

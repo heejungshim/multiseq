@@ -10,4 +10,3 @@ interleave(x, y)
 Interleave two vectors.
 }
 \keyword{internal}
-

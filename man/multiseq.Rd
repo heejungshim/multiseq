@@ -4,13 +4,34 @@
 \alias{multiseq}
 \title{Estimate underlying signal from count data \code{x} and optionally the effect of a covariate \code{g}.}
 \usage{
-multiseq(x = NULL, g = NULL, read.depth = NULL, reflect = FALSE,
-  baseline = "inter", minobs = 1, pseudocounts = 0.5, all = FALSE,
-  center = FALSE, repara = TRUE, forcebin = FALSE, lm.approx = TRUE,
-  disp = c("add", "mult"), overall.effect = TRUE, overall.loglr = FALSE,
-  cxx = TRUE, smoothing = TRUE, cyclespin = TRUE, reverse = TRUE,
-  maxlogLR = NULL, set.fitted.g = NULL, set.fitted.g.intercept = NULL,
-  get.fitted.g = TRUE, listy = NULL, verbose = FALSE, ashparam = list())
+multiseq(
+  x = NULL,
+  g = NULL,
+  read.depth = NULL,
+  reflect = FALSE,
+  baseline = "inter",
+  minobs = 1,
+  pseudocounts = 0.5,
+  all = FALSE,
+  center = FALSE,
+  repara = TRUE,
+  forcebin = FALSE,
+  lm.approx = TRUE,
+  disp = c("add", "mult"),
+  overall.effect = TRUE,
+  overall.loglr = FALSE,
+  cxx = TRUE,
+  smoothing = TRUE,
+  cyclespin = TRUE,
+  reverse = TRUE,
+  maxlogLR = NULL,
+  set.fitted.g = NULL,
+  set.fitted.g.intercept = NULL,
+  get.fitted.g = TRUE,
+  listy = NULL,
+  verbose = FALSE,
+  ashparam = list()
+)
 }
 \arguments{
 \item{x:}{a matrix (or a vector) of \code{nsig} by \code{n} counts where \code{n} should be a power of 2 or a vector of size \code{n}.}
@@ -74,7 +95,7 @@ multiseq(x = NULL, g = NULL, read.depth = NULL, reflect = FALSE,
 \item{fitted.g.intercept}{a list of \code{J} mixture of normal models fitted using \pkg{ashr} on the intercept, \code{J=log2(n)}}
 }
 \description{
-Fits the model \code{x}_{ib} $\sim$ Poi($\lambda_{ib}$) where $log(\lambda_{ib}) = \alpha_b + g_i \beta_b$.
+Fits the model \code{x}_{ib} \sim Poi(\lambda_{ib}) where $log(\lambda_{ib}) = \alpha_b + g_i \beta_b$.
 where takes a series of Poisson count signals \code{x}, with data on different samples in each row, and smooths all simultaneously using a multiscale Poisson model. Optionally, it estimates the "effect" of a covariate \code{g}.
 Estimates are all on the log intensity scale 
 Parameters \code{minobs}, \code{pseudocounts}, \code{all}, \code{center}, \code{repara}, \code{forcebin}, \code{lm.approx}, and \code{disp} are passed to \code{\link{glm.approx}}. The list \code{ashparam} specifies a list of parameters to be passed to \code{ash}.
@@ -84,4 +105,3 @@ Parameters \code{minobs}, \code{pseudocounts}, \code{all}, \code{center}, \code{
 data(dat, package="multiseq")
 res <- multiseq(x=dat$x, g=dat$g, minobs=1, lm.approx=FALSE, read.depth=dat$read.depth)
 }
-

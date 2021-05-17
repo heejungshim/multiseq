@@ -5,11 +5,13 @@
 \alias{OAS1}
 \title{A list containing counts, covariates and metadata from a RNA-Seq experiment
 with a pattern of differential expression.}
-\format{A list with elements: \code{x} a 66 by 2^12 matrix of counts, \code{read.depth}
+\format{
+A list with elements: \code{x} a 66 by 2^12 matrix of counts, \code{read.depth}
 a 66-dimensional vector specifiying the total number of counts per sample, a string \code{SNP}
 specifying the SNP name, \code{g} a 66-dimensional vector specifying the genotype (covariate)
 for each sample, \code{assembly} specifying the genome that reads were mapped to,
-\code{region} a string specifying the region of length 2^12 that reads were mapped to.}
+\code{region} a string specifying the region of length 2^12 that reads were mapped to.
+}
 \description{
 This is a subset of the data collected in an RNA-Seq experiment on
 lymphoblastoid cell lines derived from unrelated Nigerian individuals (Pickrell et al.,
@@ -21,4 +23,3 @@ read counts were extracted from the bam files with function \code{\link{get.coun
 Covariates (genotypes) are available from the International HapMap Project.
 }
 \keyword{datasets}
-

@@ -12,6 +12,9 @@ split_region(region)
 \value{
 a list with elements \code{chr}, \code{start}, \code{end}.
 }
+\description{
+Split a region string into sequence name, region start position, and region end position.
+}
 \examples{
 region=split_region("chr1:11740409-11756792")
 print(region)
@@ -19,4 +22,3 @@ print(region$chr)
 print(region$start)
 }
 \keyword{internal}
-

@@ -4,8 +4,14 @@
 \alias{writeTrackHubSkeleton}
 \title{Write \code{genomes.txt} and \code{hub.txt} files}
 \usage{
-writeTrackHubSkeleton(hub_dir, assembly = "hg19", hub_name_string,
-  email = "fake_email_address@dot.com")
+writeTrackHubSkeleton(
+  hub_dir,
+  assembly = "hg19",
+  hub_name_string,
+  email = "fake_email_address@dot.com"
+)
+}
+\description{
+Write \code{genomes.txt} and \code{hub.txt} files
 }
 \keyword{internal}
-

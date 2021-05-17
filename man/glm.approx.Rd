@@ -4,9 +4,20 @@
 \alias{glm.approx}
 \title{Fit the model specified in documentation, using either a weighted least squares approach or a generalized linear model approach, with some modifications.}
 \usage{
-glm.approx(x, g = NULL, minobs = 1, pseudocounts = 0.5, all = FALSE,
-  eps = 1e-08, center = FALSE, repara = FALSE, forcebin = FALSE,
-  lm.approx = FALSE, disp = c("add", "mult"), bound = 0.02)
+glm.approx(
+  x,
+  g = NULL,
+  minobs = 1,
+  pseudocounts = 0.5,
+  all = FALSE,
+  eps = 1e-08,
+  center = FALSE,
+  repara = FALSE,
+  forcebin = FALSE,
+  lm.approx = FALSE,
+  disp = c("add", "mult"),
+  bound = 0.02
+)
 }
 \arguments{
 \item{x:}{a matrix of N (# of samples) by 2*T (T: # of WCs or, more precisely, of different scales and locations in multi-scale space); Two consecutive columns correspond to a particular scale and location; The first column (the second column) contains # of successes (# of failures) for each sample at corresponding scale and location.}
@@ -38,4 +49,3 @@ a matrix of 2 (or 5 if g is provided) by T (# of WCs); Each row contains alphaha
 This function is optimized for fitting multiple models simultaneously
 }
 \keyword{internal}
-

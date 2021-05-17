@@ -4,11 +4,17 @@
 \alias{samplesheetToTrackHub}
 \title{Create a UCSC Genome Browser "Track Hub" from read tracks and bed tracks (of significant intervals) listed in a \code{samplesheet}.}
 \usage{
-samplesheetToTrackHub(samplesheet, hub_name = paste0(basename(samplesheet),
-  ".TrackHub"), chrom_file = system.file("extdata",
-  "chromosome.lengths.hg19.txt", package = "multiseq"), region = NULL,
-  assembly = "hg19", mountpoint = Sys.getenv("MOUNTPOINT_PATH"),
-  http_address = Sys.getenv("MOUNTPOINT_HTTP_ADDRESS"), onlyoneend = FALSE)
+samplesheetToTrackHub(
+  samplesheet,
+  hub_name = paste0(basename(samplesheet), ".TrackHub"),
+  chrom_file = system.file("extdata", "chromosome.lengths.hg19.txt", package =
+    "multiseq"),
+  region = NULL,
+  assembly = "hg19",
+  mountpoint = Sys.getenv("MOUNTPOINT_PATH"),
+  http_address = Sys.getenv("MOUNTPOINT_HTTP_ADDRESS"),
+  onlyoneend = FALSE
+)
 }
 \arguments{
 \item{samplesheet:}{a string specifying the path to the samplesheet;
@@ -45,4 +51,3 @@ samplesheet="samplesheetEncode.txt"
 samplesheetToTrackHub(samplesheet, region="chr1:100-3000")
 }  
 }
-

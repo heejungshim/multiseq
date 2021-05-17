@@ -17,5 +17,7 @@ vectorToBigWig(x, chr, start, chrom_file, bigWigFile = "out.wg")
 
 \item{bigWigFile:}{path to the output \code{bigWig} file, defaults to "out.wg"}
 }
+\description{
+Write a vector of counts to a \code{bigWig} file given position and sequence information
+}
 \keyword{internal}
-

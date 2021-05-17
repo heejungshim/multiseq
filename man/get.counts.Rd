@@ -27,4 +27,3 @@ region="chr1:11740409-11756792"
 x=get.counts(samplesheet, region)
 }
 }
-

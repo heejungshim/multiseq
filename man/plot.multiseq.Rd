@@ -4,10 +4,23 @@
 \alias{plot.multiseq}
 \title{Plot the output of \code{\link{multiseq}} (either the effect or the baseline).}
 \usage{
-\method{plot}{multiseq}(x, is.xaxis = TRUE, z.threshold = 2,
-  p.threshold = 1e-09, what = "effect", highlight = TRUE, axes = F,
-  type = "l", col = "green", main = NULL, ylim = NULL, xlab = NULL,
-  ylab = NULL, cex = NULL, ...)
+\method{plot}{multiseq}(
+  x,
+  is.xaxis = TRUE,
+  z.threshold = 2,
+  p.threshold = 1e-09,
+  what = "effect",
+  highlight = TRUE,
+  axes = F,
+  type = "l",
+  col = "green",
+  main = NULL,
+  ylim = NULL,
+  xlab = NULL,
+  ylab = NULL,
+  cex = NULL,
+  ...
+)
 }
 \arguments{
 \item{x:}{multiseq output; if x$region is defined then the \code{x} axis will use genomic coordinates.}
@@ -34,4 +47,3 @@ plot(res)
 plot(res, what="baseline")
 }
 }
-

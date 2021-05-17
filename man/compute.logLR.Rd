@@ -4,13 +4,36 @@
 \alias{compute.logLR}
 \title{Compute logLR.}
 \usage{
-compute.logLR(x, g, TItable = NULL, read.depth = NULL, minobs = 1,
-  pseudocounts = 0.5, all = FALSE, center = FALSE, repara = TRUE,
-  forcebin = FALSE, lm.approx = TRUE, disp = "add", nullcheck = TRUE,
-  pointmass = TRUE, prior = "uniform", gridmult = 2, mixsd = NULL,
-  trace = FALSE, mixcompdist = "normal", lambda1 = 1, lambda2 = 0,
-  df = NULL, randomstart = FALSE, minimaloutput = FALSE, maxiter = 5000,
-  VB = FALSE, cxx = TRUE, maxlogLR = NULL)
+compute.logLR(
+  x,
+  g,
+  TItable = NULL,
+  read.depth = NULL,
+  minobs = 1,
+  pseudocounts = 0.5,
+  all = FALSE,
+  center = FALSE,
+  repara = TRUE,
+  forcebin = FALSE,
+  lm.approx = TRUE,
+  disp = "add",
+  nullcheck = TRUE,
+  pointmass = TRUE,
+  prior = "uniform",
+  gridmult = 2,
+  mixsd = NULL,
+  trace = FALSE,
+  mixcompdist = "normal",
+  lambda1 = 1,
+  lambda2 = 0,
+  df = NULL,
+  randomstart = FALSE,
+  minimaloutput = FALSE,
+  maxiter = 5000,
+  VB = FALSE,
+  cxx = TRUE,
+  maxlogLR = NULL
+)
 }
 \arguments{
 \item{x:}{a matrix of \code{nsig} by \code{n} counts where \code{n} should be a power of 2}
@@ -47,4 +70,3 @@ a list of \code{logLR}, \code{logLR.each.scale}, \code{finite.logLR}; \code{logL
 \description{
 This function takes a series of Poisson count signals \code{x}, with data on different samples in each row and covariate \code{g} for each sample, and compute logLR to test for association between \code{x} and \code{g}. If \code{TItable} is provided, this function skips computation of \code{TItable} from \code{x} and use the \code{TItable} provided as a parameter. This helps with fast permutation test. Parameters \code{minobs}, \code{pseudocounts}, \code{all}, \code{center}, \code{repara}, \code{forcebin}, \code{lm.approx}, and \code{disp} are passed to \code{\link{glm.approx}}. The list \code{ashparam} specifies a list of parameters to be passed to \code{ash}.
 }
-

@@ -329,9 +329,9 @@ setAshParam <- function(ashparam){
 #' Estimates are all on the log intensity scale 
 #' Parameters \code{minobs}, \code{pseudocounts}, \code{all}, \code{center}, \code{repara}, \code{forcebin}, \code{lm.approx}, and \code{disp} are passed to \code{\link{glm.approx}}. The list \code{ashparam} specifies a list of parameters to be passed to \code{ash}.
 #'
-#' @param x: a matrix (or a vector) of \code{nsig} by \code{n} counts where \code{n} should be a power of 2 or a vector of size \code{n}.
+#' @param x: a matrix of \code{nsig} by \code{n} counts where \code{n} should be a power of 2.
 #' @param read.depth: an \code{nsig}-dimensional vector containing the total number of reads for each sample (used to test for association with the total intensity); defaults to NULL.
-#' @param reflect: bool, if TRUE signal is reflected, if FALSE signal is not reflected. Defaults to TRUE if n is not power of 2. See \code{\link{reflectSignal}} for details.
+#' @param reflect: bool, if TRUE signal is reflected, if FALSE signal is not reflected. Default is FALSE. Defaults to TRUE if n is not power of 2. See \code{\link{reflectSignal}} for details.
 #' @param baseline: a string, can be "inter" or "grp" or a number. Uses intercept \code{g=0} as baseline ("inter") or the group with the smallest \code{g} as baseline ("grp") or specifies value of \code{g} that should be baseline (number). If center==FALSE and baseline=="inter", then baseline will be overwritten and automatically set to "grp".
 #' @param g: an \code{nsig}-dimensional vector containing group indicators/covariates for each sample.
 #' @param minobs: minimum number of obs required to be in each logistic model.
@@ -445,10 +445,11 @@ multiseq = function(x=NULL, g=NULL, read.depth=NULL, reflect=FALSE, baseline="in
         if(is.null(listy)){
             if(reverse){
             #weights for quantitative covariate
-                if(center == TRUE)
+                if(center == TRUE){
                     w = unique(sort(g.num-mean(g.num)))
-                else
+                }else{
                     w = c(0,1)
+                }
             }
         
             #compute mean and variance of the baseline overall intensity(used in reconstructing the baseline estimate later)    

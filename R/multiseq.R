@@ -368,7 +368,7 @@ setAshParam <- function(ashparam){
 #' \item{logLR}{a list with elements \code{value} specifying the log likelihood ratio, \code{scales} a \code{J+1} vector specifying the logLR at each scale, \code{isfinite} bool specifying if the log likelihood ratio is finite}
 #' \item{fitted.g}{a list of \code{J+1} mixture of normal models fitted using \pkg{ashr}, \code{J=log2(n)}}
 #' \item{fitted.g.intercept}{a list of \code{J} mixture of normal models fitted using \pkg{ashr} on the intercept, \code{J=log2(n)}}
-multiseq = function(x=NULL, g=NULL, read.depth=NULL, reflect=FALSE, baseline="inter", minobs=1, pseudocounts=0.5, all=FALSE, center=FALSE, repara=TRUE, forcebin=FALSE, lm.approx=TRUE, disp=c("add","mult"), overall.effect=TRUE, overall.loglr=FALSE, cxx=TRUE, smoothing=TRUE, cyclespin=TRUE, reverse=TRUE, maxlogLR=NULL, set.fitted.g=NULL, set.fitted.g.intercept=NULL, get.fitted.g=TRUE, listy=NULL, verbose=FALSE, ashparam=list()){
+multiseq = function(x=NULL, g=NULL, read.depth=NULL, reflect=FALSE, baseline="inter", minobs=1, pseudocounts=0.5, all=FALSE, center=FALSE, repara=TRUE, forcebin=FALSE, lm.approx=TRUE, disp=c("add","mult"), overall.effect=NULL, overall.loglr=NULL, cxx=TRUE, smoothing=TRUE, cyclespin=TRUE, reverse=TRUE, maxlogLR=NULL, set.fitted.g=NULL, set.fitted.g.intercept=NULL, get.fitted.g=TRUE, listy=NULL, verbose=FALSE, ashparam=list()){
     disp=match.arg(disp)
     
     if(!is.null(g)) if(!(is.numeric(g)|is.factor(g))) stop("Error: invalid parameter 'g', 'g' must be numeric or factor or NULL")
@@ -390,6 +390,7 @@ multiseq = function(x=NULL, g=NULL, read.depth=NULL, reflect=FALSE, baseline="in
     if (!is.null(set.fitted.g.intercept)) ashparam.fitted.g.intercept$fixg = TRUE
     if (!smoothing) reverse = FALSE
     if (!cyclespin) {reverse = FALSE; warning("Reversing wavelet not implemented here when cyclespin=FALSE, setting reverse=FALSE")}
+    if(!is.null(overall.loglr)) if(!(is.numeric(overall.loglr) & length(overall.loglr) = 1)) stop("Error: invalid parameter 'overall.loglr', 'overall.loglr' must be numeric or NULL")
     #to do: check other input parameters
 
 
@@ -577,8 +578,8 @@ multiseq = function(x=NULL, g=NULL, read.depth=NULL, reflect=FALSE, baseline="in
             }            
         }
 
-	if (overall.loglr==FALSE){
-	    logLR[J+1] = 0
+	if (!is.null(overall.loglr)){
+	    logLR[J+1] = overall.loglr
 	}        
 
         if (ashparam$pointmass){

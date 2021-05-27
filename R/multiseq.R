@@ -390,7 +390,7 @@ multiseq = function(x=NULL, g=NULL, read.depth=NULL, reflect=FALSE, baseline="in
     if (!is.null(set.fitted.g.intercept)) ashparam.fitted.g.intercept$fixg = TRUE
     if (!smoothing) reverse = FALSE
     if (!cyclespin) {reverse = FALSE; warning("Reversing wavelet not implemented here when cyclespin=FALSE, setting reverse=FALSE")}
-    if(!is.null(overall.loglr)) if(!(is.numeric(overall.loglr) & length(overall.loglr) = 1)) stop("Error: invalid parameter 'overall.loglr', 'overall.loglr' must be numeric or NULL")
+    if(!is.null(overall.loglr)) if(!(is.numeric(overall.loglr) & length(overall.loglr) == 1)) stop("Error: invalid parameter 'overall.loglr', 'overall.loglr' must be numeric or NULL")
     #to do: check other input parameters
 
 

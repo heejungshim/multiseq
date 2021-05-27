@@ -607,8 +607,8 @@ multiseq = function(x=NULL, g=NULL, read.depth=NULL, reflect=FALSE, baseline="in
                 effect.var = NULL
             }else{
                 if(!is.null(overall.effect)){ # if user provides mean and varaince.
-                    res.rate$lpratio.mean = 0  
-                    res.rate$lpratio.var = 0 
+                    res.rate$lpratio.mean = overall.effect[1] 
+                    res.rate$lpratio.var = overall.effect[2]
                 }
                 if(cxx==FALSE){
                     effect.mean = reverse.pwave(res.rate$lpratio.mean, matrix(res$lpratio.mean, J, n, byrow=TRUE), matrix(res$lqratio.mean, J, n, byrow=TRUE))

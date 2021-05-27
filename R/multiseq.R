@@ -368,7 +368,7 @@ setAshParam <- function(ashparam){
 #' \item{logLR}{a list with elements \code{value} specifying the log likelihood ratio, \code{scales} a \code{J+1} vector specifying the logLR at each scale, \code{isfinite} bool specifying if the log likelihood ratio is finite}
 #' \item{fitted.g}{a list of \code{J+1} mixture of normal models fitted using \pkg{ashr}, \code{J=log2(n)}}
 #' \item{fitted.g.intercept}{a list of \code{J} mixture of normal models fitted using \pkg{ashr} on the intercept, \code{J=log2(n)}}
-multiseq = function(x=NULL, g=NULL, read.depth=NULL, reflect=FALSE, baseline="inter", minobs=1, pseudocounts=0.5, all=FALSE, center=FALSE, repara=TRUE, forcebin=FALSE, lm.approx=TRUE, disp=c("add","mult"), overall.effect=TRUE, overall.loglr=NULL, cxx=TRUE, smoothing=TRUE, cyclespin=TRUE, reverse=TRUE, maxlogLR=NULL, set.fitted.g=NULL, set.fitted.g.intercept=NULL, get.fitted.g=TRUE, listy=NULL, verbose=FALSE, ashparam=list()){
+multiseq = function(x=NULL, g=NULL, read.depth=NULL, reflect=FALSE, baseline="inter", minobs=1, pseudocounts=0.5, all=FALSE, center=FALSE, repara=TRUE, forcebin=FALSE, lm.approx=TRUE, disp=c("add","mult"), overall.effect=NULL, overall.loglr=NULL, cxx=TRUE, smoothing=TRUE, cyclespin=TRUE, reverse=TRUE, maxlogLR=NULL, set.fitted.g=NULL, set.fitted.g.intercept=NULL, get.fitted.g=TRUE, listy=NULL, verbose=FALSE, ashparam=list()){
     disp=match.arg(disp)
     
     if(!is.null(g)) if(!(is.numeric(g)|is.factor(g))) stop("Error: invalid parameter 'g', 'g' must be numeric or factor or NULL")
@@ -391,6 +391,7 @@ multiseq = function(x=NULL, g=NULL, read.depth=NULL, reflect=FALSE, baseline="in
     if (!smoothing) reverse = FALSE
     if (!cyclespin) {reverse = FALSE; warning("Reversing wavelet not implemented here when cyclespin=FALSE, setting reverse=FALSE")}
     if(!is.null(overall.loglr)) if(!(is.numeric(overall.loglr) & length(overall.loglr) == 1)) stop("Error: invalid parameter 'overall.loglr', 'overall.loglr' must be numeric or NULL")
+    if(!is.null(overall.effect)) if(!(is.numeric(overall.effect) & length(overall.effect) == 2)) stop("Error: invalid parameter 'overall.effect', 'overall.effect' must be numeric or NULL")
     #to do: check other input parameters
 
 
@@ -605,8 +606,10 @@ multiseq = function(x=NULL, g=NULL, read.depth=NULL, reflect=FALSE, baseline="in
                 effect.mean = NULL
                 effect.var = NULL
             }else{
-                if(overall.effect==FALSE)#if only shape effect is desired, then differences in overall intensities is not considered  
-                    res$lpratio.mean = 0 #lpratio.v=0  
+                if(!is.null(overall.effect)){ # if user provides mean and varaince.
+                    res.rate$lpratio.mean = 0  
+                    res.rate$lpratio.var = 0 
+                }
                 if(cxx==FALSE){
                     effect.mean = reverse.pwave(res.rate$lpratio.mean, matrix(res$lpratio.mean, J, n, byrow=TRUE), matrix(res$lqratio.mean, J, n, byrow=TRUE))
                     effect.var = reverse.pwave(res.rate$lpratio.var, matrix(res$lpratio.var, J, n, byrow=TRUE), matrix(res$lqratio.var, J, n, byrow=TRUE))

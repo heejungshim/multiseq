@@ -118,9 +118,10 @@ Below we will apply function `multiseq` to real data, namely RNA-Sequencing data
     plot(res1, z.threshold=z.threshold, highlight=FALSE, is.xaxis=FALSE, what="baseline", main="(genotype AG)", ylim=ylim)
     plot(res2, z.threshold=z.threshold, highlight=FALSE, is.xaxis=FALSE, what="baseline", main="(genotype GG)", ylim=ylim)
     plot(res, z.threshold=z.threshold, is.xaxis=FALSE)
-    transcripts <- get.transcripts(file.path(path.package("multiseq"),"extdata","hg19.OAS1.refGene.part.gp"), 
+    #transcripts <- get.transcripts(file.path(path.package("multiseq"),"extdata","hg19.OAS1.refGene.part.gp"), 
                                    OAS1$region)
-    plot(transcripts, OAS1$region)
+    #plot(transcripts, OAS1$region)
+plot(OAS1$region)
 ```
 
 Notice the use of argument `minobs` in function `multiseq` (type `?multiseq` to see a complete list of possible arguments) which can be used to specifies the minimum number of observations ...required to be .. in each logistic model.

@@ -18,8 +18,8 @@ multiseq(
   forcebin = FALSE,
   lm.approx = TRUE,
   disp = c("add", "mult"),
-  overall.effect = TRUE,
-  overall.loglr = FALSE,
+  overall.effect = NULL,
+  overall.loglr = NULL,
   cxx = TRUE,
   smoothing = TRUE,
   cyclespin = TRUE,
@@ -34,11 +34,11 @@ multiseq(
 )
 }
 \arguments{
-\item{x:}{a matrix (or a vector) of \code{nsig} by \code{n} counts where \code{n} should be a power of 2 or a vector of size \code{n}.}
+\item{x:}{a matrix of \code{nsig} by \code{n} counts where \code{n} should be a power of 2.}
 
 \item{read.depth:}{an \code{nsig}-dimensional vector containing the total number of reads for each sample (used to test for association with the total intensity); defaults to NULL.}
 
-\item{reflect:}{bool, if TRUE signal is reflected, if FALSE signal is not reflected. Defaults to TRUE if n is not power of 2. See \code{\link{reflectSignal}} for details.}
+\item{reflect:}{bool, if TRUE signal is reflected, if FALSE signal is not reflected. Default is FALSE. Defaults to TRUE if n is not power of 2. See \code{\link{reflectSignal}} for details.}
 
 \item{baseline:}{a string, can be "inter" or "grp" or a number. Uses intercept \code{g=0} as baseline ("inter") or the group with the smallest \code{g} as baseline ("grp") or specifies value of \code{g} that should be baseline (number). If center==FALSE and baseline=="inter", then baseline will be overwritten and automatically set to "grp".}
 

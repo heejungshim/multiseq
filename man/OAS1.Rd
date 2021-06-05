@@ -3,8 +3,7 @@
 \docType{data}
 \name{OAS1}
 \alias{OAS1}
-\title{A list containing counts, covariates and metadata from a RNA-Seq experiment
-with a pattern of differential expression.}
+\title{OAS1 gene data set containing 1) RNA-seq counts for each sample over  OAS1 gene region, 2) genotypes at a particular SNP, and 3)  metadata.}
 \format{
 A list with elements: \code{x} a 66 by 2^12 matrix of counts, \code{read.depth}
 a 66-dimensional vector specifiying the total number of counts per sample, a string \code{SNP}
@@ -18,8 +17,7 @@ lymphoblastoid cell lines derived from unrelated Nigerian individuals (Pickrell 
 Nature 464, 768-772, 2010). Specifically, it consists of a matrix of counts for 66
 samples over a region of length 2^12 (chr12:113354417-113358512) where SNP rs10774671
 was found to be associated with a differential expression pattern. Reads were
-downloaded from http://eqtl.uchicago.edu/Home.html amd mapped to \code{hg19} with bwa;
-read counts were extracted from the bam files with function \code{\link{get.counts}}.
+downloaded from http://eqtl.uchicago.edu/Home.html amd mapped to \code{hg19} with bwa.
 Covariates (genotypes) are available from the International HapMap Project.
 }
 \keyword{datasets}

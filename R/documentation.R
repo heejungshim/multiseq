@@ -1,15 +1,11 @@
 #' @useDynLib multiseq
-#'
-#' @title A list containing counts, covariates and metadata from a RNA-Seq experiment
-#' with a pattern of differential expression.
-#' 
+#' @title OAS1 gene data set containing 1) RNA-seq counts for each sample over  OAS1 gene region, 2) genotypes at a particular SNP, and 3)  metadata.
 #' @description This is a subset of the data collected in an RNA-Seq experiment on
 #' lymphoblastoid cell lines derived from unrelated Nigerian individuals (Pickrell et al.,
 #' Nature 464, 768-772, 2010). Specifically, it consists of a matrix of counts for 66
 #' samples over a region of length 2^12 (chr12:113354417-113358512) where SNP rs10774671
 #' was found to be associated with a differential expression pattern. Reads were
-#' downloaded from http://eqtl.uchicago.edu/Home.html amd mapped to \code{hg19} with bwa;
-#' read counts were extracted from the bam files with function \code{\link{get.counts}}.
+#' downloaded from http://eqtl.uchicago.edu/Home.html amd mapped to \code{hg19} with bwa.
 #' Covariates (genotypes) are available from the International HapMap Project.
 #' @docType data
 #' @keywords datasets
@@ -18,12 +14,11 @@
 #' specifying the SNP name, \code{g} a 66-dimensional vector specifying the genotype (covariate)
 #' for each sample, \code{assembly} specifying the genome that reads were mapped to,
 #' \code{region} a string specifying the region of length 2^12 that reads were mapped to.
-#'
 #' @name OAS1
 NULL
 
 
-#' Multiseq: analysis of sequence data from multiple samples
+#' multiseq: multi-scale Poisson process approaches for differential expression analysis or association analysis of high-throughput sequencing data
 #' @docType package
 #' @name multiseqr
 #NULL

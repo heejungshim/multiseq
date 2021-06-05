@@ -1,6 +1,5 @@
 #' @title Check if executable is in user's PATH.
 #' @param name: the name of the executable.
-#' @export
 noExecutable <- function(name){
     if(Sys.which(name)==""){
         warning(paste("cannot find function",name))
@@ -11,7 +10,6 @@ noExecutable <- function(name){
 
 #' @title Write \code{genomes.txt} and \code{hub.txt} files
 #' @keywords internal
-#' @export
 writeTrackHubSkeleton <- function(hub_dir, assembly="hg19", hub_name_string, email="fake_email_address@dot.com"){
     assembly_dir = file.path(hub_dir, assembly)
     
@@ -235,7 +233,6 @@ bamToBigWig <- function(bam_track, chrom_file, region, bigWig_track, onlyoneend)
 #' @param mountpoint: path to the directory where the track hub folder will be saved in; this directory should be associated with an \code{http address} or an \code{ftp address}; defaults to \code{Sys.getenv("MOUNTPOINT_PATH")}.
 #' @param http_address: http or ftp address associated with the mountpoint; defaults to \code{Sys.getenv("MOUNTPOINT_PATH")}.
 #' @param onlyoneend: a bool, defaults to FALSE; use TRUE if input is in \code{bam} format and only first end of the paired end read should be used.
-#' @export
 #' @examples
 #'\dontrun{
 #' setwd(file.path(path.package("multiseq"),"extdata"))
@@ -402,7 +399,6 @@ samplesheetToTrackHub <- function(samplesheet, hub_name=paste0(basename(samplesh
 #' @param start: position on the sequence "chr" where the counting process started
 #' @param chrom_file: path to the file containing chromosome names and lengths
 #' @param bigWigFile: path to the output \code{bigWig} file, defaults to "out.wg"
-#' @export
 #' @keywords internal
 vectorToBigWig <- function(x, chr, start, chrom_file, bigWigFile="out.wg"){
     cmd = paste("wigToBigWig stdin", chrom_file, bigWigFile)
@@ -428,7 +424,6 @@ vectorToBigWig <- function(x, chr, start, chrom_file, bigWigFile="out.wg"){
 #' @param intervals: output of get.intervals
 #' @param chrom_file: path to the file containing chromosome names and lengths
 #' @param bigBedFile: output file, defaults to "out.bb"
-#' @export
 #' @keywords internal
 intervalsToBigBed <- function(intervals, chrom_file, bigBedFile="out.bb"){
     tmp_bed_file=paste0(basename(bigBedFile),".bed")
@@ -489,7 +484,6 @@ writeTrackdbFile <- function(z.threshold, assembly_dir){
 #' ftp address; default=\code{Sys.getenv("MOUNTPOINT_PATH")}
 #' @param http_address: http or ftp address associated with the mountpoint;
 #' default=\code{Sys.getenv("MOUNTPOINT_PATH")}
-#' @export
 #' @examples
 #' \dontrun{
 #' region="chr1:154206209-154214400"

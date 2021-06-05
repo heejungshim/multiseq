@@ -11,7 +11,6 @@ suppressW <- function(w){
 #' This function takes a matrix x of Poisson counts, nind by 2^k, and returns a nind by (2*2^k)-2 matrix that sums up columns of x at different scales. The last two columns of the aggregate are the sums of the first half of x and the sums of the second half. This function is needed to estimate the pi-s by aggregating data from multiple regions.
 #' @param x: nind by 2^k matrix of Poisson counts 
 #' @return a nind by (2*2^k)-2 matrix that sums up columns of x at different scales
-#' @export
 #' @keywords internal
 haar.aggregate= function(x){
    if(is.vector(x)){dim(x)<- c(1,length(x))} #convert x to matrix
@@ -658,7 +657,6 @@ multiseq = function(x=NULL, g=NULL, read.depth=NULL, reflect=FALSE, baseline="in
 #' @param cxx: bool, indicating whether to use Rcode or c++ code (faster)
 #' @param maxlogLR: a positive number, default=NULL, if \code{maxlogLR} is provided as a positive number, the function returns this number as \code{logLR} when \code{logLR} is infinite.
 #'
-#' @export
 #' @return a list of \code{logLR}, \code{logLR.each.scale}, \code{finite.logLR}; \code{logLR.each.scale} contains logLR for each scale. \code{finite.logLR} takes 0 or 1 indicating whether \code{logLR} is finite or not.    
 compute.logLR <- function(x, g, TItable = NULL, read.depth = NULL, minobs=1, pseudocounts=0.5, all=FALSE, center=FALSE, repara=TRUE, forcebin=FALSE, lm.approx=TRUE, disp="add", nullcheck=TRUE, pointmass=TRUE, prior="uniform", gridmult=2, mixsd=NULL, trace=FALSE, mixcompdist="normal", lambda1=1, lambda2=0, df=NULL, randomstart=FALSE, minimaloutput=FALSE, maxiter=5000, VB=FALSE, cxx=TRUE, maxlogLR=NULL){
 
@@ -778,7 +776,6 @@ compute.logLR <- function(x, g, TItable = NULL, read.depth = NULL, minobs=1, pse
 #' @param cxx: bool, indicating whether to use Rcode or c++ code (faster)
 #' @param maxlogLR: a positive number, default=NULL, if \code{maxlogLR} is provided as a positive number, the function returns this number as \code{logLR} when \code{logLR} is infinite.
 #'
-#' @export
 #' @return a list of \code{most.sig.SNP.posi} (if there are multiple SNPs, returns position of SNPs with strongest signal), \code{pval}, \code{logLR} (output from \code{\link{compute.logLR}} for each SNP), \code{Count_stop} (when permutaton stops), \code{Count_sig} (number of permuted data with significant test statistic), \code{numPerm} (parameter), and \code{numSig} (parameter).
 permutation.logLR <- function(pheno.dat, geno.dat, library.read.depth=NULL, numPerm = 100, numSig  = 10, eps=0.01, use.default.compute.logLR = TRUE, minobs=1, pseudocounts=0.5, all=FALSE, center=FALSE, repara=TRUE, forcebin=FALSE, lm.approx=TRUE, disp="add", nullcheck=TRUE, pointmass=TRUE, prior="uniform", gridmult=2, mixsd=NULL, trace=FALSE, mixcompdist="normal", lambda1=1, lambda2=0, df=NULL, randomstart=FALSE, minimaloutput=FALSE, maxiter=5000, VB=FALSE, cxx=TRUE, maxlogLR = NULL){
 

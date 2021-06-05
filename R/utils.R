@@ -6,7 +6,6 @@
 #' print(region)
 #' print(region$chr)
 #' print(region$start)
-#' @export
 #' @keywords internal
 #' @return a list with elements \code{chr}, \code{start}, \code{end}. 
 split_region <- function(region){
@@ -32,7 +31,6 @@ split_region <- function(region){
 #' @param samplesheet: a string specifying the path to a samplesheet; the samplesheet should contain a column with header \code{SampleID} and a column with header either \code{bamPath} or \code{hdf5Path} or \code{bigWigPath}.
 #' @param region: a string specifying a genomic region: reference sequence name, start position, end position (see example below).
 #' @param onlyonend: a bool, defaults to FALSE; use TRUE if input is in bam format and only first end of the paired end read should be used.
-#' @export 
 #' @return a matrix with \code{N} rows and \code{end-start+1} columns containing the number of reads that start at each base in the specified region in each sample. Rownames correspond to \code{samples$SampleID}
 #' @examples
 #'\dontrun{
@@ -123,7 +121,6 @@ get.counts <- function(samplesheet=NULL, region=NULL, onlyoneend=FALSE){
 #' format (a standard gene annotation format).
 #' @param GenePredIn: a file in \code{GenePred} format containing gene annotation
 #' @param region: a string specifying a genomic region
-#' @export
 #' @examples
 #' GenePredIn <- file.path(path.package("multiseq"),"extdata","hg19.OAS1.refGene.part.gp")
 #' region     <- "chr12:113354417-113358512"
@@ -153,7 +150,6 @@ get.exons.start.end <- function(transcript){
 #' @param Transcripts:  output of \code{\link{get.transcripts}}
 #' @param region: region to be plotted; defaults to NULL.
 #' @param is.xaxis: bool, if TRUE plot \code{x} axis otherwise don't plot \code{x} axis; defaults to TRUE.
-#' @export
 #' @examples
 #' region     <- "chr12:113354417-113358512" 
 #' GenePredIn  <- file.path(path.package("multiseq"),"extdata","hg19.OAS1.refGene.part.gp") 
@@ -362,7 +358,6 @@ plot.multiseq <- function(x, is.xaxis=TRUE, z.threshold=2, p.threshold=1e-09, wh
 #' @param z.threshold: a multiplier of the standard deviation.
 #' @param p.threshold: this argument is only used when \code{what=="baseline"} or \code{what=="log_baseline"} to specify a threshold for the detection of peaks: if \code{mean-z.threshold*sqrt(var)>p.threshold} then a peak is called.
 #' @param region: a string specifying a genomic region: reference sequence name, start position, end position; defaults to NULL; if provided, the function will output the interval in genomic coordinates.
-#' @export
 #' @keywords internal 
 get.intervals.utils <- function(mean, var, what, z.threshold, p.threshold, region){
     if (is.null(mean) | is.null(var))
@@ -487,7 +482,6 @@ get.intervals <- function(res, z.threshold=2, p.threshold=1e-09, region=NULL, wh
 #' intervals <- get.intervals(res, region=dat$region, what="effect")
 #' write.bed(intervals, "out.bed")
 #' }
-#' @export
 write.bed <- function(intervals, bedfile){
     if (is.null(intervals)){
         stop("Invalid input intervals")
@@ -522,7 +516,6 @@ write.bed <- function(intervals, bedfile){
 #' @param res: \code{\link{multiseq}} output.
 #' @param file: path to the output file.
 #' @param what: if \code{what} is "log_baseline" then write \code{\link{multiseq}} \code{res$baseline.mean} and \code{res$baseline.var}; if \code{what} is "effect" then write \code{\link{multiseq}} \code{res$effect.mean} and \code{res$effect.var} output to a compressed file; defaults to "effect".
-#' @export
 #' @examples
 #'\dontrun{
 #' #run multiseq on sample data
@@ -552,3 +545,51 @@ write.gz <- function(res, file="results.mean.sd2.gz", what="effect"){
     }
     close(gz1)
 }
+
+
+##' 'sample.from.Binomial.with.Overdispersion' simulates binomial samples with/without
+##' over dispersion. 
+##'
+##' For a given overdispersion parameter, computed parameters for beta distribution can be invalid (e.g., mu.sig are 0 or 1). Then we sample read without overdispersion for those positions.
+##' 
+##' @param num.sam number of samples to be sampled
+##' @param total.count a vector of non-negative counts;
+##' @param mu.sig a vector of probabilities (we allow 0 or 1 as probablity)
+##' @param over.dispersion if over.dispersion == NULL, simulate data from binomial. If over.dispersion is provided, simulate data binomial with over.dispersion.
+##' @return a matrix of num.sam by L (length of total.count) containing simulated data. 
+sample.from.Binomial.with.Overdispersion <- function(num.sam, total.count, mu.sig, over.dispersion=NULL){
+    
+    invalid.entry = ((mu.sig < 0) | (mu.sig > 1))
+    if(sum(invalid.entry) > 0){ stop("ERROR, mu.sig have some values outside of valid range [0, 1]")}
+    
+    if(is.null(over.dispersion)){
+        return(matrix(data=rbinom(length(mu.sig)*num.sam, total.count, mu.sig), nr = num.sam, byrow = TRUE))
+    }else{
+        
+        
+        final.dat = matrix(data=NA, nr = num.sam, nc = length(mu.sig))
+        
+        # get alpha and beta
+        resBeta = estBetaParams(mu.sig, over.dispersion)
+        alpha = resBeta$alpha
+        beta = resBeta$beta
+        
+        # for valid alpha and beta, sample data 
+        del.ix = is.na(alpha)
+        p.sig = rbeta(sum(!del.ix)*num.sam, alpha[!del.ix], beta[!del.ix])
+        dat.V = rbinom(sum(!del.ix)*num.sam, total.count[!del.ix], p.sig) 
+        final.dat[,!del.ix] = matrix(data=dat.V, nr = num.sam, byrow = TRUE)
+        
+        # for invalid alpha and beta, sample without over dispersion
+        if(sum(del.ix) > 0){
+            dat.IV = matrix(data=rbinom(sum(del.ix)*num.sam, total.count[del.ix], mu.sig[del.ix]), nr = num.sam, byrow = TRUE)
+            final.dat[,del.ix] = matrix(data=dat.IV, nr = num.sam, byrow = TRUE)
+        }
+        
+        return(final.dat)
+        
+    }
+    
+}
+
+

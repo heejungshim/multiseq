@@ -459,7 +459,6 @@ compute.glm=function(x,g,d,n,na.index,repara){
 #' @param disp: "all" or "mult", indicates which type of overdispersion is assumed when lm.approx=TRUE
 #' @param bound: numeric, indicates the threshold of the success vs failure ratio below which pseudocounts will be added
 #'
-#' @export
 #' @keywords internal
 #' @return a matrix of 2 (or 5 if g is provided) by T (# of WCs); Each row contains alphahat (1st row), standard error of alphahat (2nd), betahat (3rd), standard error of betahat (4th), covariance between alphahat and betahat (5th) for each WC.
 glm.approx=function(x,g=NULL,minobs=1,pseudocounts=0.5,all=FALSE,eps=1e-8,center=FALSE,repara=FALSE,forcebin=FALSE,lm.approx=FALSE,disp=c("add","mult"),bound=0.02){

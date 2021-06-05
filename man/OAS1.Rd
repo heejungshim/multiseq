@@ -3,21 +3,21 @@
 \docType{data}
 \name{OAS1}
 \alias{OAS1}
-\title{OAS1 gene data set containing 1) RNA-seq counts for each sample over  OAS1 gene region, 2) genotypes at a particular SNP, and 3)  metadata.}
+\title{OAS1 gene data set}
 \format{
 A list with elements: \code{x} a 66 by 2^12 matrix of counts, \code{read.depth}
 a 66-dimensional vector specifiying the total number of counts per sample, a string \code{SNP}
-specifying the SNP name, \code{g} a 66-dimensional vector specifying the genotype (covariate)
-for each sample, \code{assembly} specifying the genome that reads were mapped to,
+specifying the SNP name, \code{g} a 66-dimensional vector specifying the genotype for each sample, 
+\code{assembly} specifying the genome that reads were mapped to,
 \code{region} a string specifying the region of length 2^12 that reads were mapped to.
 }
 \description{
 This is a subset of the data collected in an RNA-Seq experiment on
 lymphoblastoid cell lines derived from unrelated Nigerian individuals (Pickrell et al.,
 Nature 464, 768-772, 2010). Specifically, it consists of a matrix of counts for 66
-samples over a region of length 2^12 (chr12:113354417-113358512) where SNP rs10774671
-was found to be associated with a differential expression pattern. Reads were
+samples over a region of length 2^12 (gene OAS1; chr12:113354417-113358512) where SNP rs10774671
+was found to be associated with splicing (see Figure 3 in Pickrell et al.). Reads were
 downloaded from http://eqtl.uchicago.edu/Home.html amd mapped to \code{hg19} with bwa.
-Covariates (genotypes) are available from the International HapMap Project.
+Genotypes are available from the International HapMap Project.
 }
 \keyword{datasets}

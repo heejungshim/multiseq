@@ -556,6 +556,7 @@ write.gz <- function(res, file="results.mean.sd2.gz", what="effect"){
 ##' @param total.count a vector of non-negative counts;
 ##' @param mu.sig a vector of probabilities (we allow 0 or 1 as probablity)
 ##' @param over.dispersion if over.dispersion == NULL, simulate data from binomial. If over.dispersion is provided, simulate data binomial with over.dispersion.
+##' @export
 ##' @return a matrix of num.sam by L (length of total.count) containing simulated data. 
 sample.from.Binomial.with.Overdispersion <- function(num.sam, total.count, mu.sig, over.dispersion=NULL){
     

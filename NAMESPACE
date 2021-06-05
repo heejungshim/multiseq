@@ -3,5 +3,6 @@
 S3method(plot,multiseq)
 export(get.intervals)
 export(multiseq)
+export(sample.from.Binomial.with.Overdispersion)
 export(setAshParam)
 useDynLib(multiseq)

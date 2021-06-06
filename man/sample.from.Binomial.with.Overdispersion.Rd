@@ -2,8 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{sample.from.Binomial.with.Overdispersion}
 \alias{sample.from.Binomial.with.Overdispersion}
-\title{'sample.from.Binomial.with.Overdispersion' simulates binomial samples with/without
-over dispersion.}
+\title{Simulates binomial samples with/without over dispersion.}
 \usage{
 sample.from.Binomial.with.Overdispersion(
   num.sam,
@@ -25,5 +24,6 @@ sample.from.Binomial.with.Overdispersion(
 a matrix of num.sam by L (length of total.count) containing simulated data.
 }
 \description{
-For a given overdispersion parameter, computed parameters for beta distribution can be invalid (e.g., mu.sig are 0 or 1). Then we sample read without overdispersion for those positions.
+This function simulate samples from binomial distribution or beta-binomial distribution 
+as described in Shim et al., 2021.
 }

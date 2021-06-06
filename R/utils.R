@@ -536,7 +536,7 @@ get.intervals.utils <- function(mean, var, what, z.threshold, p.threshold, regio
     toreturn$start       <- start
     toreturn$end         <- end
     toreturn$sign        <- sign
-    toreturn$z.threshold <- z.threshold
+    toreturn$threshold <- z.threshold
     #toreturn$type        <- type
     
     return(toreturn)
@@ -704,17 +704,17 @@ write.gz <- function(res, file="results.mean.sd2.gz", what="effect"){
 }
 
 
-##' 'sample.from.Binomial.with.Overdispersion' simulates binomial samples with/without
-##' over dispersion. 
-##'
-##' For a given overdispersion parameter, computed parameters for beta distribution can be invalid (e.g., mu.sig are 0 or 1). Then we sample read without overdispersion for those positions.
-##' 
-##' @param num.sam number of samples to be sampled
-##' @param total.count a vector of non-negative counts;
-##' @param mu.sig a vector of probabilities (we allow 0 or 1 as probablity)
-##' @param over.dispersion if over.dispersion == NULL, simulate data from binomial. If over.dispersion is provided, simulate data binomial with over.dispersion.
-##' @export
-##' @return a matrix of num.sam by L (length of total.count) containing simulated data. 
+#' @title Simulates binomial samples with/without over dispersion. 
+#' 
+#' @description This function simulate samples from binomial distribution or beta-binomial distribution 
+#' as described in Shim et al., 2021. 
+#' 
+#' @param num.sam number of samples to be sampled
+#' @param total.count a vector of non-negative counts;
+#' @param mu.sig a vector of probabilities (we allow 0 or 1 as probablity)
+#' @param over.dispersion if over.dispersion == NULL, simulate data from binomial. If over.dispersion is provided, simulate data binomial with over.dispersion.
+#' @export
+#' @return a matrix of num.sam by L (length of total.count) containing simulated data. 
 sample.from.Binomial.with.Overdispersion <- function(num.sam, total.count, mu.sig, over.dispersion=NULL){
     
     invalid.entry = ((mu.sig < 0) | (mu.sig > 1))

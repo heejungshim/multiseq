@@ -312,11 +312,12 @@ plot.multiseq <- function(x, is.xaxis=TRUE, threshold=2, what="effect", highligh
     if (is.null(ylab))
         ylab=""
     par(mgp=c(0,1,0))
-    plot(y,
-         type=type,
+    
+    plot(1,1,
+         type="n",
          ylim=ylim,
          main=main,
-         col=paste("dark",col),
+         #col=paste("dark",col),
          xlab=xlab,
          ylab=ylab,
          axes=axes)
@@ -332,20 +333,23 @@ plot.multiseq <- function(x, is.xaxis=TRUE, threshold=2, what="effect", highligh
         }else
             axis(1)
     }
-    if (what=="effect" | what=="log_baseline"){
-        points(ytop, type=type, col=col)
-        points(ybottom, type=type, col=col)
-    }
-    
     #draw intervals with effect or with peaks
     if (highlight){
-        abline(h=k, col="pink")  
+        abline(h=k, col="orangered")  
         N.polygons  <- length(high.wh)
         if (N.polygons > 0)
             for(j in 1:N.polygons)
                 rect(high.wh[j]-0.5, ymin-abs(ymin/5), high.wh[j]+0.5, ymax+abs(ymax/5),
-                     col=rgb(1, 0, 0,0.5), border=NA, lty=NULL)
+                     col="#FFDBE9", border=NA, lty=NULL)
+    }  
+    
+    points(y, type=type, col = col)
+    
+    if (what=="effect" | what=="log_baseline"){
+        points(ytop, type=type, col=col, lty=2)
+        points(ybottom, type=type, col=col, lty=2)
     }
+
 }
 
 #' @title Plot the output of \code{\link{multiseq}} (either the effect or the baseline).

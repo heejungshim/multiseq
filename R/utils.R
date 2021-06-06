@@ -262,7 +262,7 @@ plot.multiseq <- function(x, is.xaxis=TRUE, threshold=2, what="effect", highligh
         stop("Error: no effect in multiseq output x")
     if (!(what=="effect" | what=="log_baseline" | what=="baseline"))
         stop("Error: wrong parameter 'what'")
-    if(what=="log_baseline"){highlight =FALSE}
+    if((what=="log_baseline") | (what=="baseline")){highlight =FALSE}
 
     if (what=="effect"){
         ybottom     <- x$effect.mean - threshold*sqrt(x$effect.var)
@@ -334,13 +334,14 @@ plot.multiseq <- function(x, is.xaxis=TRUE, threshold=2, what="effect", highligh
     }
     #draw intervals with effect or with peaks
     if (highlight){
-        abline(h=k, col="orangered")  
         N.polygons  <- length(high.wh)
         if (N.polygons > 0)
             for(j in 1:N.polygons)
                 rect(high.wh[j]-0.5, ymin-abs(ymin/5), high.wh[j]+0.5, ymax+abs(ymax/5),
                      col="#FFDBE9", border=NA, lty=NULL)
-    }  
+        abline(h=k, col="orangered") 
+    }
+      
     
     points(y, type=type, col = col)
     

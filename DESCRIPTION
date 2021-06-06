@@ -1,21 +1,13 @@
 Package: multiseq
-Maintainer: Ester Pantaleo <esterpantaleo@gmail.com>, Heejung Shim
-    <hjshim@gmail.com>, Zhengrong Xing <zrxing@uchicago.edu>, Matthew Stephens
-    <mstephens@uchicago.edu>
-Author: Ester Pantaleo, Heejung Shim, Zhengrong Xing, Matthew Stephens.
+Encoding: UTF-8
 Type: Package
-Title: Multiscale Sequence Analysis
+Maintainer: Heejung Shim <hjshim@gmail.com>, Matthew Stephens <mstephens@uchicago.edu>
+Author: Heejung Shim, Zhengrong Xing, Ester Pantaleo, Matthew Stephens.
+Title: multi-scale Poisson process approach for differential expression analysis or association analysis of high-throughput sequencing data
 Version: 0.1.3
-Description: Multiseq implements a Bayesian multiscale method for
-    inhomogeneous Poisson processes. An inhomogeneous Poisson process is ...
-    Multiseq can be used both for smoothing and for effect size estimation
-    given a covariate. (add more...)
-    estimation ...
-SystemRequirements: the executables samtools, bigWigToWig, wigToBigWig,
-    bigWigInfo, and bedToBigBed must be in the USER's path in order
-    to be able to run functions get.counts, multiseqToTrackHub, and
-    samplesheetToTrackHub.
-License: GPL-3
+Date: 2021-06-06
+Description: multi-scale Poisson process approach for differential expression analysis or association analysis of high-throughput sequencing data. It estimates and tests for differences (or associations) in the high-throughput sequencing data across samples. The algorithms implement the methods described Shim et al, 2021. 
+License: GPL (>= 3)
 Depends:
     R (>= 3.1.1),
     Rcpp (>= 0.10.4),
@@ -25,8 +17,11 @@ Depends:
 VignetteBuilder: knitr
 Suggests:
     knitr,
-    rhdf5
+    rhdf5,
+    rmarkdown,
+    testthat
 LinkingTo: Rcpp
+NeedsCompilation: yes
+LazyData: true
 URL: https://github.com/stephenslab/multiseq
-Packaged: 2014-11-19 21:18:57 UTC; epantaleo
 RoxygenNote: 7.1.1.9001

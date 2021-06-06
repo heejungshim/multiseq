@@ -1,5 +1,4 @@
 #' Suppress an ash warning that we want to ignore; used any time ash is called in the package
-#' @param w
 #' @keywords internal
 suppressW <- function(w){
     if( any(grepl("It's likely that the input data is not coming from a distribution with zero mean", w)))
@@ -26,8 +25,8 @@ haar.aggregate= function(x){
 }
 
 #' Compute the third and fourth moments of a normal or a mixture of normals distribution.
-#' @param mu
-#' @param sigma
+#' @param mu mean 
+#' @param sigma standard deviation
 #' @param moment: if moment=3 compute the third moment, if moment=4 compute the forth moment
 #' @keywords internal
 tfmoment=function(mu,sigma,moment,pi=NULL){

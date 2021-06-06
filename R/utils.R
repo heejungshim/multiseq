@@ -243,10 +243,9 @@ plot.transcripts <- function(Transcripts, region=NULL, is.xaxis=TRUE, axes=F, xl
 #' 
 #' @param x: multiseq output; if x$region is defined then the \code{x} axis will use genomic coordinates.
 #' @param is.xaxis: bool, if TRUE plot \code{x} axis otherwise don't plot \code{x} axis.
-#' @param z.threshold: a multiplier of the standard deviation.
-#' @param p.threshold: this argument is only used when \code{what=="baseline"} or \code{what=="log_baseline"} to specify a threshold for the detection of peaks: if \code{res$baseline.mean-z.threshold*sqrt(baseline.var)>log(p.threshold)} then a peak is called; defaults to 1e-09.
+#' @param threshold: a multiplier of the standard deviation.
 #' @param what: a string, it can be either "baseline" or "log_baseline" or "effect".
-#' @param highlight: a bool, if TRUE highlight intervals with strong peaks or strong signal; defaults to TRUE.shell
+#' @param highlight: a bool, if TRUE highlight areas with strong signal; defaults to TRUE
 #' @export
 #' @examples
 #'\dontrun{
@@ -256,17 +255,18 @@ plot.transcripts <- function(Transcripts, region=NULL, is.xaxis=TRUE, axes=F, xl
 #' plot(res)
 #' plot(res, what="baseline")
 #' }
-plot.multiseq <- function(x, is.xaxis=TRUE, z.threshold=2, p.threshold=1e-09, what="effect", highlight=TRUE, axes=F, type="l", col="green", main=NULL, ylim=NULL, xlab=NULL, ylab=NULL, cex=NULL, ...){
+plot.multiseq <- function(x, is.xaxis=TRUE, threshold=2, what="effect", highlight=TRUE, axes=F, type="l", col="blue", main=NULL, ylim=NULL, xlab=NULL, ylab=NULL, cex=NULL, ...){
     if ((is.null(x$baseline.mean) | is.null(x$baseline.var)) & what=="baseline")
         stop("Error: no baseline in multiseq output")
     if ((is.null(x$effect.mean) | is.null(x$effect.var)) & what=="effect")
         stop("Error: no effect in multiseq output x")
     if (!(what=="effect" | what=="log_baseline" | what=="baseline"))
         stop("Error: wrong parameter 'what'")
+    if(what=="log_baseline"){highlight =FALSE}
 
     if (what=="effect"){
-        ybottom     <- x$effect.mean - z.threshold*sqrt(x$effect.var)
-        ytop        <- x$effect.mean + z.threshold*sqrt(x$effect.var)
+        ybottom     <- x$effect.mean - threshold*sqrt(x$effect.var)
+        ytop        <- x$effect.mean + threshold*sqrt(x$effect.var)
         N           <- length(x$effect.mean)
         y           <- x$effect.mean
         wh.bottom   <- which(ybottom > 0)
@@ -274,23 +274,23 @@ plot.multiseq <- function(x, is.xaxis=TRUE, z.threshold=2, p.threshold=1e-09, wh
         high.wh     <- sort(unique(union(wh.bottom, wh.top)))
         k           <- 0
     }else{
-        ybottom     <- x$baseline.mean - z.threshold*sqrt(x$baseline.var)
-        ytop        <- x$baseline.mean + z.threshold*sqrt(x$baseline.var)
+        ybottom     <- x$baseline.mean - threshold*sqrt(x$baseline.var)
+        ytop        <- x$baseline.mean + threshold*sqrt(x$baseline.var)
         N           <- length(x$baseline.mean)
-        k           <- log(p.threshold)
-        high.wh     <- which(ybottom > k)
+        #k           <- log(p.threshold)
+        #high.wh     <- which(ybottom > k)
         if (what=="baseline"){
                 y           <- exp(x$baseline.mean)
                 main        <- paste(what, main)
                 ymax        <- max(y)
                 ymin        <- min(y)
-                k           <- p.threshold
+                #k           <- p.threshold
         }else{
             y           <- x$baseline.mean
         }
     }
     if (what!="baseline"){
-        main        <- paste0(what, " +/- ", z.threshold, " s.d. ", main)
+        main        <- paste0(what, " +/- ", threshold, " s.d. ", main)
         ymax        <- max(ytop)
         ymin        <- min(ybottom)
     }
@@ -301,7 +301,7 @@ plot.multiseq <- function(x, is.xaxis=TRUE, z.threshold=2, p.threshold=1e-09, wh
         if (is.null(xlab)){
             if (!is.null(x$region)){
                 region <- split_region(x$region)
-                xlab    <- paste("Position (Mb) on", region$chr)
+                xlab    <- paste("Position on", region$chr)
             }else{
                 xlab    <- "Position"
             }
@@ -339,7 +339,117 @@ plot.multiseq <- function(x, is.xaxis=TRUE, z.threshold=2, p.threshold=1e-09, wh
     
     #draw intervals with effect or with peaks
     if (highlight){
-        abline(h=k, col="red")  
+        abline(h=k, col="pink")  
+        N.polygons  <- length(high.wh)
+        if (N.polygons > 0)
+            for(j in 1:N.polygons)
+                rect(high.wh[j]-0.5, ymin-abs(ymin/5), high.wh[j]+0.5, ymax+abs(ymax/5),
+                     col=rgb(1, 0, 0,0.5), border=NA, lty=NULL)
+    }
+}
+
+#' @title Plot the output of \code{\link{multiseq}} (either the effect or the baseline).
+#'
+#' @description If `what=="effect"` this function will plot the effect and intervals where \code{\link{multiseq}} found strong effect, i.e., when zero is outside of +/- \code{z.threshold} * posterior standard deviation). If  `what=="baseline"` or `what=="log_baseline"` this function will plot either the baseline \code{exp(res$baseline.mean)} or the log of the baseline \code{res$baseline.mean}, respectively, and  intervals where \code{\link{multiseq}} found strong peaks at a specified threshold, i.e., when log(p.threshold) is below +/- \code{z.threshold} * posterior standard deviation of the log baseline. If x$region is defined then the \code{x} axis will use genomic coordinates.
+#' 
+#' @param x: multiseq output; if x$region is defined then the \code{x} axis will use genomic coordinates.
+#' @param is.xaxis: bool, if TRUE plot \code{x} axis otherwise don't plot \code{x} axis.
+#' @param z.threshold: a multiplier of the standard deviation.
+#' @param p.threshold: this argument is only used when \code{what=="baseline"} or \code{what=="log_baseline"} to specify a threshold for the detection of peaks: if \code{res$baseline.mean-z.threshold*sqrt(baseline.var)>log(p.threshold)} then a peak is called; defaults to 1e-09.
+#' @param what: a string, it can be either "baseline" or "log_baseline" or "effect".
+#' @param highlight: a bool, if TRUE highlight intervals with strong peaks or strong signal; defaults to TRUE.shell
+#' @examples
+#'\dontrun{
+#' data(dat, package="multiseq")
+#' res <- multiseq(x=dat$x, g=dat$g, minobs=1, lm.approx=FALSE, read.depth=dat$read.depth)
+#' res$region <- dat$region
+#' plot(res)
+#' plot(res, what="baseline")
+#' }
+plot.multiseq.old <- function(x, is.xaxis=TRUE, z.threshold=2, p.threshold=1e-09, what="effect", highlight=TRUE, axes=F, type="l", col="blue", main=NULL, ylim=NULL, xlab=NULL, ylab=NULL, cex=NULL, ...){
+    if ((is.null(x$baseline.mean) | is.null(x$baseline.var)) & what=="baseline")
+        stop("Error: no baseline in multiseq output")
+    if ((is.null(x$effect.mean) | is.null(x$effect.var)) & what=="effect")
+        stop("Error: no effect in multiseq output x")
+    if (!(what=="effect" | what=="log_baseline" | what=="baseline"))
+        stop("Error: wrong parameter 'what'")
+    
+    if (what=="effect"){
+        ybottom     <- x$effect.mean - z.threshold*sqrt(x$effect.var)
+        ytop        <- x$effect.mean + z.threshold*sqrt(x$effect.var)
+        N           <- length(x$effect.mean)
+        y           <- x$effect.mean
+        wh.bottom   <- which(ybottom > 0)
+        wh.top      <- which(ytop < 0)
+        high.wh     <- sort(unique(union(wh.bottom, wh.top)))
+        k           <- 0
+    }else{
+        ybottom     <- x$baseline.mean - z.threshold*sqrt(x$baseline.var)
+        ytop        <- x$baseline.mean + z.threshold*sqrt(x$baseline.var)
+        N           <- length(x$baseline.mean)
+        k           <- log(p.threshold)
+        high.wh     <- which(ybottom > k)
+        if (what=="baseline"){
+            y           <- exp(x$baseline.mean)
+            main        <- paste(what, main)
+            ymax        <- max(y)
+            ymin        <- min(y)
+            k           <- p.threshold
+        }else{
+            y           <- x$baseline.mean
+        }
+    }
+    if (what!="baseline"){
+        main        <- paste0(what, " +/- ", z.threshold, " s.d. ", main)
+        ymax        <- max(ytop)
+        ymin        <- min(ybottom)
+    }
+    
+    if (is.null(ylim))
+        ylim=c(ymin,ymax)
+    if (is.xaxis){
+        if (is.null(xlab)){
+            if (!is.null(x$region)){
+                region <- split_region(x$region)
+                xlab    <- paste("Position on", region$chr)
+            }else{
+                xlab    <- "Position"
+            }
+        }
+    }else{
+        xlab <- ""
+    }
+    if (is.null(ylab))
+        ylab=""
+    par(mgp=c(0,1,0))
+    plot(y,
+         type=type,
+         ylim=ylim,
+         main=main,
+         col=paste("dark",col),
+         xlab=xlab,
+         ylab=ylab,
+         axes=axes)
+    #draw axes
+    axis(2)
+    if (is.xaxis){
+        if (!is.null(x$region)){
+            axis(1,
+                 at=seq(1,N,ceiling(N/5)),
+                 labels=format(seq(region$start,region$end,ceiling(N/5))/1000000, nsmall=3),
+                 cex.lab=cex,
+                 cex.axis=cex)
+        }else
+            axis(1)
+    }
+    if (what=="effect" | what=="log_baseline"){
+        points(ytop, type=type, col=col)
+        points(ybottom, type=type, col=col)
+    }
+    
+    #draw intervals with effect or with peaks
+    if (highlight){
+        abline(h=k, col="pink")  
         N.polygons  <- length(high.wh)
         if (N.polygons > 0)
             for(j in 1:N.polygons)

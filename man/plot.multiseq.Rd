@@ -10,9 +10,10 @@
   threshold = 2,
   what = "effect",
   highlight = TRUE,
+  col.mean = "navy",
+  col.sd = "sky blue",
   axes = F,
   type = "l",
-  col = "blue",
   main = NULL,
   ylim = NULL,
   xlab = NULL,
@@ -22,6 +23,10 @@
 )
 }
 \arguments{
+\item{col.mean}{: a string, specifying the color for posterior mean.}
+
+\item{col.sd}{: a string, specifying the color for +/- \code{threshold} * posterior standard deviations.}
+
 \item{x:}{multiseq output; if x$region is defined then the \code{x} axis will use genomic coordinates.}
 
 \item{is.xaxis:}{bool, if TRUE plot \code{x} axis otherwise don't plot \code{x} axis.}
@@ -33,12 +38,12 @@
 \item{highlight:}{a bool, if TRUE, highlight areas with strong signal when what == "effect"; defaults to TRUE;}
 }
 \description{
-If `what=="effect"` this function will plot the posterior mean (sold line) for effect size,
- i.e., the difference in log-intensity between groups, and +/- \code{threshold} `*` posterior standard deviations (dotted line). 
+If `what=="effect"` this function will plot the posterior mean (line in \code{col.mean}) for effect size,
+ i.e., the difference in log-intensity between groups, and +/- \code{threshold} * posterior standard deviations (lines in \code{col.sd}). 
  If `what=="effect"` and `highlight==TRUE`, this function will highlight areas with strong effects (i.e., zero is 
- outside of the interval constructed by the two dotted lines). If  `what=="baseline”`, this function will plot the posterior mean 
+ outside of the interval constructed by the two lines in \code{col.sd}). If  `what=="baseline”`, this function will plot the posterior mean 
  for the baseline \code{exp(res$baseline.mean)}. If `what=="log_baseline”`, this function will plot the posterior mean 
- for the log of the baseline \code{res$baseline.mean}, and +/- \code{threshold} `*`` posterior standard deviations. 
+ for the log of the baseline \code{res$baseline.mean}, and +/- \code{threshold} * posterior standard deviations. 
  If x$region is defined then the \code{x} axis will use genomic coordinates.
 }
 \examples{

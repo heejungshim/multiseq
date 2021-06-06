@@ -369,7 +369,7 @@ setAshParam <- function(ashparam){
 #' \item{fitted.g}{a list of \code{J+1} mixture of normal models fitted using \pkg{ashr}, \code{J=log2(n)}}
 #' \item{fitted.g.intercept}{a list of \code{J} mixture of normal models fitted using \pkg{ashr} on the intercept, \code{J=log2(n)}}
 multiseq = function(x=NULL, g=NULL, read.depth=NULL, reflect=FALSE, baseline="inter", minobs=1, pseudocounts=0.5, all=FALSE, center=FALSE, repara=TRUE, 
-                    forcebin=FALSE, lm.approx=TRUE, disp=c("add","mult"), overall.effect=NULL, overall.loglr=NULL, cxx=TRUE,
+                    forcebin=FALSE, lm.approx=TRUE, disp="add", overall.effect=NULL, overall.loglr=NULL, cxx=TRUE,
                     cyclespin=TRUE, reverse=TRUE, maxlogLR=NULL, verbose=FALSE){
   
     disp=match.arg(disp)

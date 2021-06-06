@@ -239,19 +239,21 @@ plot.transcripts <- function(Transcripts, region=NULL, is.xaxis=TRUE, axes=F, xl
 
 #' @title Plot the output of \code{\link{multiseq}} (either the effect or the baseline).
 #'
-#' @description If `what=="effect"` this function will plot the posterior mean (sold line) for effect size,
-#'  i.e., the difference in log-intensity between groups, and +/- \code{threshold} `*` posterior standard deviations (dotted line). 
+#' @description If `what=="effect"` this function will plot the posterior mean (line in \code{col.mean}) for effect size,
+#'  i.e., the difference in log-intensity between groups, and +/- \code{threshold} * posterior standard deviations (lines in \code{col.sd}). 
 #'  If `what=="effect"` and `highlight==TRUE`, this function will highlight areas with strong effects (i.e., zero is 
-#'  outside of the interval constructed by the two dotted lines). If  `what=="baseline”`, this function will plot the posterior mean 
+#'  outside of the interval constructed by the two lines in \code{col.sd}). If  `what=="baseline”`, this function will plot the posterior mean 
 #'  for the baseline \code{exp(res$baseline.mean)}. If `what=="log_baseline”`, this function will plot the posterior mean 
-#'  for the log of the baseline \code{res$baseline.mean}, and +/- \code{threshold} `*`` posterior standard deviations. 
+#'  for the log of the baseline \code{res$baseline.mean}, and +/- \code{threshold} * posterior standard deviations. 
 #'  If x$region is defined then the \code{x} axis will use genomic coordinates.
 #'  
 #' @param x: multiseq output; if x$region is defined then the \code{x} axis will use genomic coordinates.
 #' @param is.xaxis: bool, if TRUE plot \code{x} axis otherwise don't plot \code{x} axis.
 #' @param threshold: a multiplier of the standard deviation.
 #' @param what: a string, it can be either "baseline" or "log_baseline" or "effect".
-#' @param highlight: a bool, if TRUE, highlight areas with strong signal when what == "effect"; defaults to TRUE; 
+#' @param highlight: a bool, if TRUE, highlight areas with strong signal when what == "effect"; defaults to TRUE;
+#' @param col.mean : a string, specifying the color for posterior mean.
+#' @param col.sd : a string, specifying the color for +/- \code{threshold} * posterior standard deviations.
 #' @export
 #' @examples
 #'\dontrun{
@@ -261,7 +263,7 @@ plot.transcripts <- function(Transcripts, region=NULL, is.xaxis=TRUE, axes=F, xl
 #'plot(res, threshold = 3)
 #'plot(res, what="baseline")
 #' }
-plot.multiseq <- function(x, is.xaxis=TRUE, threshold=2, what="effect", highlight=TRUE, axes=F, type="l", col="blue", main=NULL, ylim=NULL, xlab=NULL, ylab=NULL, cex=NULL, ...){
+plot.multiseq <- function(x, is.xaxis=TRUE, threshold=2, what="effect", highlight=TRUE, col.mean="navy", col.sd = "sky blue", axes=F, type="l", main=NULL, ylim=NULL, xlab=NULL, ylab=NULL, cex=NULL, ...){
     if ((is.null(x$baseline.mean) | is.null(x$baseline.var)) & what=="baseline")
         stop("Error: no baseline in multiseq output")
     if ((is.null(x$effect.mean) | is.null(x$effect.var)) & what=="effect")
@@ -349,11 +351,11 @@ plot.multiseq <- function(x, is.xaxis=TRUE, threshold=2, what="effect", highligh
     }
       
     
-    points(y, type=type, col = col)
+    points(y, type=type, col = col.mean)
     
     if (what=="effect" | what=="log_baseline"){
-        points(ytop, type=type, col=col, lty=2)
-        points(ybottom, type=type, col=col, lty=2)
+        points(ytop, type=type, col=col.sd)
+        points(ybottom, type=type, col=col.sd)
     }
 
 }
@@ -749,5 +751,45 @@ sample.from.Binomial.with.Overdispersion <- function(num.sam, total.count, mu.si
     }
     
 }
+
+
+#' @title Compute a p-value using the empirical distribution of test statistic under the null.
+#' 
+#' @description This function takes empirical distribution of statistic under the null (\code{statistic.null}) and 
+#' a series of observed test statistics (\code{observed.statistic}), and returns a series of p-values corresponding 
+#' to the observed test statistics. The resulting p-values will be often used in the  `qvalue` R package (Storey et al., 2020) 
+#' to compute the Storey’s FDR (Storey, 2011). The p-values computed from the empirical null distribution are not always 
+#' continuous, potentially leading to the inaccurate estimation of FDR in the `qvalue` package which uses the insignificant p values 
+#' to estimate the proportion of null tests. So this function uses randomization to produce continuous p-values that are uniformly 
+#' distributed under the null. Let t be observed test statistic. p-value is defined by P(T >= t | H0), but this is not uniformly 
+#' distributed unless test statistic is continuous. We randomize them using P(T > t | H0) + U*P(T = t | H0), where U ~ uniform(0,1). 
+#' The proposed p-value is between P(T > t | H0) and P(T > t | H0) + P(T = t | H0). This p-value can be empirically computed 
+#' by #[T > t] + U*(#[T = t] + 1) / (total number of statistic under the null + 1). Here `+1`` in the denominator is due to observed t. 
+#' 
+#' @param statistic.null a vector of test statistics under the null.
+#' @param observed.statistic a vector of observed test statistics.
+#' @param big.sig bool indicating whether bigger statistic is more significant.
+#' @param seed a number; seed number.
+#' @export
+#' @return a vector of p-values corresponding to the observed test statistics.
+get.pvalue.from.empirical.null.dist <- function(statistic.null, observed.statistic, big.sig = TRUE, seed=NULL){
+  
+  if(!is.null(seed)){
+    set.seed(seed)
+  }
+  numNulltests = length(statistic.null)
+  if(big.sig){
+    numSig = sapply(observed.statistic, function(x, statistic.null){ return(sum(statistic.null > x))}, statistic.null = statistic.null)
+  }else{
+    numSig = sapply(observed.statistic, function(x, statistic.null){ return(sum(statistic.null < x))}, statistic.null = statistic.null)
+  }
+  numEqual = sapply(observed.statistic, function(x, statistic.null){ return(sum(statistic.null == x))}, statistic.null = statistic.null)
+  Uval = runif(length(observed.statistic))
+  
+  pval.list = (numSig + Uval*(numEqual + 1))/(numNulltests + 1)
+
+  return(pval.list)
+}
+
 
 

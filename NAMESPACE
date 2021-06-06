@@ -2,6 +2,7 @@
 
 S3method(plot,multiseq)
 export(get.areas.strong.effects)
+export(get.pvalue.from.empirical.null.dist)
 export(multiseq)
 export(sample.from.Binomial.with.Overdispersion)
 useDynLib(multiseq)

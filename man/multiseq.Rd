@@ -18,7 +18,7 @@ multiseq(
   repara = TRUE,
   forcebin = FALSE,
   lm.approx = TRUE,
-  disp = c("add", "mult"),
+  disp = "add",
   overall.effect = NULL,
   overall.loglr = NULL,
   cxx = TRUE,

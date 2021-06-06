@@ -52,6 +52,20 @@ NULL
 #' @name chr1.111764939.111765962.ATACseq
 NULL
 
+#' @title Empirical distribution of the multiseq test statistic from ATAC-seq analysis in Shim et al, 2021. 
+#' 
+#' @description This is the output from our ATAC-seq analysis in Shim et al, 2021. We applied multiseq to two controls 
+#' (media vs. ethanol) for the 242,714 regions and this data set contains the resulting 242,714 test statistics. 
+#' The two controls are expected to have no differences in chromatin accessibility. Thus, we can construct the empirical 
+#' null distribution of the multiseq test statistic using the 242,714 test statistics in this data set. 
+#' 
+#' @docType data
+#' @keywords datasets
+#' @format A vector of length 242714. 
+#' @name ATACseq.multiseq.stat.null
+NULL
+
+
 #' multiseq: multi-scale Poisson process approaches for differential expression analysis or association analysis of high-throughput sequencing data
 #' @docType package
 #' @name multiseqr

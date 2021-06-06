@@ -320,17 +320,28 @@ setAshParam <- function(ashparam){
     return(ashparam)
 }
     
-#' Estimate underlying signal from count data \code{x} and optionally the effect of a covariate \code{g}.
+
+#' @title Estimate and test for differences (or associations) in the high-throughput sequencing data (count data) 
+#' across samples using the methods described in Shim et al., 2021. 
 #' 
-#' It takes a series of Poisson count signals \code{x}, with data on different samples in each row, and smooths all simultaneously using a multiscale Poisson model. Optionally, it estimates the "effect" of a covariate \code{g}.
-#' Estimates are all on the log intensity scale 
-#' Parameters \code{minobs}, \code{pseudocounts}, \code{all}, \code{center}, \code{repara}, \code{forcebin}, \code{lm.approx}, and \code{disp} are passed to \code{\link{glm.approx}}. The list \code{ashparam} specifies a list of parameters to be passed to \code{ash}.
+#' @description This function takes a series of Poisson count data \code{x}, with data on different samples in each row, 
+#' and a covariate (e.g., group indicator) \code{g}. Then, this function uses multi-scale Poisson process approaches 
+#' 1) to estimate the "effect" of the covariate \code{g} on the count data (in log scale; i.e., the difference in log-intensity 
+#' between groups of samples) and 2) to test for association of the covariate \code{g} with the count data. The function 
+#' returns 1) posterior mean and variance for the effect size and 2) test statistic (logLR) to measure the association signal. 
+#' It also returns posterior mean and variance for the baseline signal. If `\code{g} == NULL`, this function only computes 
+#' posterior and variance for the baseline signal. 
+#' 
+#' Parameters \code{minobs}, \code{pseudocounts}, \code{all}, \code{center}, \code{repara}, \code{forcebin}, \code{lm.approx}, 
+#' and \code{disp} are passed to \code{\link{glm.approx}}. 
 #'
-#' @param x: a matrix of \code{nsig} by \code{n} counts where \code{n} should be a power of 2.
+#' @param x: a matrix of \code{nsig} by \code{n} counts where \code{n} is often a power of 2.
 #' @param read.depth: an \code{nsig}-dimensional vector containing the total number of reads for each sample (used to test for association with the total intensity); defaults to NULL.
 #' @param reflect: bool, if TRUE signal is reflected, if FALSE signal is not reflected. Default is FALSE. Defaults to TRUE if n is not power of 2. See \code{\link{reflectSignal}} for details.
 #' @param baseline: a string, can be "inter" or "grp" or a number. Uses intercept \code{g=0} as baseline ("inter") or the group with the smallest \code{g} as baseline ("grp") or specifies value of \code{g} that should be baseline (number). If center==FALSE and baseline=="inter", then baseline will be overwritten and automatically set to "grp".
 #' @param g: an \code{nsig}-dimensional vector containing group indicators/covariates for each sample.
+#' @param overall.loglr: a positive number, defaults to NULL, if \code{overall.loglr} is provided as a positive number, the function uses \code{overall.loglr} as a log likelihood ratio for overall expression (top scale) when computing the test statistics. This option is useful when a user wants to incorporate the output from other software into multiseq.
+#' @param overall.effect: a 2-dimensional vector, defaults to NULL, if \code{overall.effect} is provided as a 2-dimensional vector, the function uses the first and second elements of \code{overall.effect} as posterior mean and variance, respectively, for the effect on overall expression (top scale). This option is useful when a user wants to incorporate the output from other software into multiseq.
 #' @param minobs: minimum number of obs required to be in each logistic model.
 #' @param pseudocounts: a number to be added to counts.
 #' @param all: bool, if TRUE pseudocounts are added to all entries, if FALSE pseudocounts are added only to cases when either number of successes or number of failures (but not both) is 0.
@@ -339,35 +350,35 @@ setAshParam <- function(ashparam){
 #' @param forcebin: bool, if TRUE don't allow for overdipersion. Defaults to TRUE if \code{nsig=1}.
 #' @param lm.approx: bool, indicating whether a WLS alternative should be used.
 #' @param disp: a string, can be either "add" or "mult", indicates which type of overdispersion is assumed when \code{lm.approx=TRUE}.
-#' @param shape.eff: bool, indicating whether to consider only shape effects (TRUE) or not (FALSE)
 #' @param cxx: bool, indicating whether to use c++ code (faster) (TRUE) or R code (FALSE)
 #' @param maxlogLR: a positive number, defaults to NULL, if \code{maxlogLR} is provided as a positive number, the function returns this number as \code{logLR} when \code{logLR} is infinite.
-#' @param smoothing: bool, indicating whether to apply \pkg{ashr} to smooth the signal (TRUE) or not (FALSE); if \code{smoothing==FALSE} then reverse is set to FALSE; this option is only used when inferring shared pi-s. 
 #' @param cyclespin: bool, indicating whether to use cyclespin (i.e., TI table) (TRUE) or not (i.e., haar aggregate) (FALSE). If \code{cyclespin}==FALSE then reverse is set to FALSE because reversing wavelet is not implemented here.
 #' @param reverse: bool, indicating whether to reverse wavelet (TRUE) or not.
-#' @param set.fitted.g: a list of \code{J+1} mixture of normal models fitted using \pkg{ashr}, \code{J=log2(n)}.
-#' @param set.fitted.g.intercept: a list of \code{J} mixture of normal models fitted using \pkg{ashr} on the intercept, \code{J=log2(n)}.  
-#' @param get.fitted.g: bool, indicating whether to save \code{fitted.g}.
-#' @param listy: a list of elements \code{y},\code{y.rate},\code{intervals}; if \code{listy} is not NULL, then \code{y} and \code{y.rate} are forced to \code{listy$y} and \code{listy$y.rate} respectively; this option is used when inferring shared pi-s.
 #' @param verbose: bool, defaults to FALSE, if TRUE \code{\link{multiseq}} also outputs \code{logLR$scales} (scales contains (part of) \pkg{ashr} output for each scale), \code{fitted.g}, and \code{fitted.g.intercept}.
-#' @param ashparam: a list of parameters to be passed to \code{ash}; default values are set by function \code{\link{setAshParam}}.
 #' @export
-#'
 #' @examples
-#' #load data contained in dat
-#' data(dat, package="multiseq")
-#' res <- multiseq(x=dat$x, g=dat$g, minobs=1, lm.approx=FALSE, read.depth=dat$read.depth)
-#' @return \code{multiseq} returns an object of \code{\link[base]{class}} "multiseq", a list with the following elements (or a simplified list if \code{verbose=FALSE} or \code{smoothing=FALSE}) \cr
-#' \item{baseline.mean}{an \code{nsig}-vector with the posterior mean of baseline log(intensity)}
-#' \item{baseline.var}{an \code{nsig}-vector with the posterior baseline variance}
-#' \item{effect.mean}{an \code{nsig}-vector with the posterior effect mean}
-#' \item{effect.var}{an \code{nsig}-vector with the posterior effect variance}
+#' #load data contained in chr17.10160989.10162012.DNase.seq
+#' data(chr17.10160989.10162012.DNase.seq, package="multiseq")
+#' res <- multiseq(x=chr17.10160989.10162012.DNase.seq$x, g=chr17.10160989.10162012.DNase.seq$g)
+#' @return \code{multiseq} returns an object of \code{\link[base]{class}} "multiseq", a list with the following elements (or a simplified list if \code{verbose=FALSE}) \cr
+#' \item{baseline.mean}{an \code{n}-vector with the posterior mean of baseline log(intensity)}
+#' \item{baseline.var}{an \code{n}-vector with the posterior baseline variance}
+#' \item{effect.mean}{an \code{n}-vector with the posterior effect mean}
+#' \item{effect.var}{an \code{n}-vector with the posterior effect variance}
 #' \item{logLR}{a list with elements \code{value} specifying the log likelihood ratio, \code{scales} a \code{J+1} vector specifying the logLR at each scale, \code{isfinite} bool specifying if the log likelihood ratio is finite}
 #' \item{fitted.g}{a list of \code{J+1} mixture of normal models fitted using \pkg{ashr}, \code{J=log2(n)}}
 #' \item{fitted.g.intercept}{a list of \code{J} mixture of normal models fitted using \pkg{ashr} on the intercept, \code{J=log2(n)}}
-multiseq = function(x=NULL, g=NULL, read.depth=NULL, reflect=FALSE, baseline="inter", minobs=1, pseudocounts=0.5, all=FALSE, center=FALSE, repara=TRUE, forcebin=FALSE, lm.approx=TRUE, disp=c("add","mult"), overall.effect=NULL, overall.loglr=NULL, cxx=TRUE, smoothing=TRUE, cyclespin=TRUE, reverse=TRUE, maxlogLR=NULL, set.fitted.g=NULL, set.fitted.g.intercept=NULL, get.fitted.g=TRUE, listy=NULL, verbose=FALSE, ashparam=list()){
+multiseq = function(x=NULL, g=NULL, read.depth=NULL, reflect=FALSE, baseline="inter", minobs=1, pseudocounts=0.5, all=FALSE, center=FALSE, repara=TRUE, 
+                    forcebin=FALSE, lm.approx=TRUE, disp=c("add","mult"), overall.effect=NULL, overall.loglr=NULL, cxx=TRUE,
+                    cyclespin=TRUE, reverse=TRUE, maxlogLR=NULL, verbose=FALSE){
+  
     disp=match.arg(disp)
-    
+    ashparam=list()
+    get.fitted.g=TRUE
+    smoothing=TRUE
+    set.fitted.g=NULL
+    set.fitted.g.intercept=NULL
+    listy=NULL
     if(!is.null(g)) if(!(is.numeric(g)|is.factor(g))) stop("Error: invalid parameter 'g', 'g' must be numeric or factor or NULL")
     if(!is.logical(center)) stop("Error: invalid parameter 'center', 'center' must be bool")#need this
     if(!((baseline == "inter") | (baseline=="grp") | is.numeric(baseline))) stop("Error: invalid parameter 'baseline', 'baseline' can be a number or 'inter' or 'grp'")
@@ -629,6 +640,321 @@ multiseq = function(x=NULL, g=NULL, read.depth=NULL, reflect=FALSE, baseline="in
         result <- list(baseline.mean=baseline.mean, baseline.var=baseline.var, effect.mean=effect.mean, effect.var=effect.var, logLR=list(value=sumlogLR, isfinite=finite.logLR))
     }
     return(structure(result, class="multiseq"))
+}
+
+
+
+
+
+
+#' Estimate underlying signal from count data \code{x} and optionally the effect of a covariate \code{g}.
+#' 
+#' It takes a series of Poisson count signals \code{x}, with data on different samples in each row, and smooths all simultaneously using a multiscale Poisson model. Optionally, it estimates the "effect" of a covariate \code{g}.
+#' Estimates are all on the log intensity scale 
+#' Parameters \code{minobs}, \code{pseudocounts}, \code{all}, \code{center}, \code{repara}, \code{forcebin}, \code{lm.approx}, and \code{disp} are passed to \code{\link{glm.approx}}. The list \code{ashparam} specifies a list of parameters to be passed to \code{ash}.
+#'
+#' @param x: a matrix of \code{nsig} by \code{n} counts where \code{n} should be a power of 2.
+#' @param read.depth: an \code{nsig}-dimensional vector containing the total number of reads for each sample (used to test for association with the total intensity); defaults to NULL.
+#' @param reflect: bool, if TRUE signal is reflected, if FALSE signal is not reflected. Default is FALSE. Defaults to TRUE if n is not power of 2. See \code{\link{reflectSignal}} for details.
+#' @param baseline: a string, can be "inter" or "grp" or a number. Uses intercept \code{g=0} as baseline ("inter") or the group with the smallest \code{g} as baseline ("grp") or specifies value of \code{g} that should be baseline (number). If center==FALSE and baseline=="inter", then baseline will be overwritten and automatically set to "grp".
+#' @param g: an \code{nsig}-dimensional vector containing group indicators/covariates for each sample.
+#' @param minobs: minimum number of obs required to be in each logistic model.
+#' @param pseudocounts: a number to be added to counts.
+#' @param all: bool, if TRUE pseudocounts are added to all entries, if FALSE pseudocounts are added only to cases when either number of successes or number of failures (but not both) is 0.
+#' @param center: bool, indicating whether to center \code{g}.
+#' @param repara: bool, indicating whether to reparameterize \code{alpha} and \code{beta} so that their likelihoods can be factorized. 
+#' @param forcebin: bool, if TRUE don't allow for overdipersion. Defaults to TRUE if \code{nsig=1}.
+#' @param lm.approx: bool, indicating whether a WLS alternative should be used.
+#' @param disp: a string, can be either "add" or "mult", indicates which type of overdispersion is assumed when \code{lm.approx=TRUE}.
+#' @param shape.eff: bool, indicating whether to consider only shape effects (TRUE) or not (FALSE)
+#' @param cxx: bool, indicating whether to use c++ code (faster) (TRUE) or R code (FALSE)
+#' @param maxlogLR: a positive number, defaults to NULL, if \code{maxlogLR} is provided as a positive number, the function returns this number as \code{logLR} when \code{logLR} is infinite.
+#' @param smoothing: bool, indicating whether to apply \pkg{ashr} to smooth the signal (TRUE) or not (FALSE); if \code{smoothing==FALSE} then reverse is set to FALSE; this option is only used when inferring shared pi-s. 
+#' @param cyclespin: bool, indicating whether to use cyclespin (i.e., TI table) (TRUE) or not (i.e., haar aggregate) (FALSE). If \code{cyclespin}==FALSE then reverse is set to FALSE because reversing wavelet is not implemented here.
+#' @param reverse: bool, indicating whether to reverse wavelet (TRUE) or not.
+#' @param set.fitted.g: a list of \code{J+1} mixture of normal models fitted using \pkg{ashr}, \code{J=log2(n)}.
+#' @param set.fitted.g.intercept: a list of \code{J} mixture of normal models fitted using \pkg{ashr} on the intercept, \code{J=log2(n)}.  
+#' @param get.fitted.g: bool, indicating whether to save \code{fitted.g}.
+#' @param listy: a list of elements \code{y},\code{y.rate},\code{intervals}; if \code{listy} is not NULL, then \code{y} and \code{y.rate} are forced to \code{listy$y} and \code{listy$y.rate} respectively; this option is used when inferring shared pi-s.
+#' @param verbose: bool, defaults to FALSE, if TRUE \code{\link{multiseq}} also outputs \code{logLR$scales} (scales contains (part of) \pkg{ashr} output for each scale), \code{fitted.g}, and \code{fitted.g.intercept}.
+#' @param ashparam: a list of parameters to be passed to \code{ash}; default values are set by function \code{\link{setAshParam}}.
+#'
+#' @examples
+#' #load data contained in dat
+#' data(dat, package="multiseq")
+#' res <- multiseq(x=dat$x, g=dat$g, minobs=1, lm.approx=FALSE, read.depth=dat$read.depth)
+#' @return \code{multiseq} returns an object of \code{\link[base]{class}} "multiseq", a list with the following elements (or a simplified list if \code{verbose=FALSE} or \code{smoothing=FALSE}) \cr
+#' \item{baseline.mean}{an \code{nsig}-vector with the posterior mean of baseline log(intensity)}
+#' \item{baseline.var}{an \code{nsig}-vector with the posterior baseline variance}
+#' \item{effect.mean}{an \code{nsig}-vector with the posterior effect mean}
+#' \item{effect.var}{an \code{nsig}-vector with the posterior effect variance}
+#' \item{logLR}{a list with elements \code{value} specifying the log likelihood ratio, \code{scales} a \code{J+1} vector specifying the logLR at each scale, \code{isfinite} bool specifying if the log likelihood ratio is finite}
+#' \item{fitted.g}{a list of \code{J+1} mixture of normal models fitted using \pkg{ashr}, \code{J=log2(n)}}
+#' \item{fitted.g.intercept}{a list of \code{J} mixture of normal models fitted using \pkg{ashr} on the intercept, \code{J=log2(n)}}
+multiseq.old = function(x=NULL, g=NULL, read.depth=NULL, reflect=FALSE, baseline="inter", minobs=1, pseudocounts=0.5, all=FALSE, center=FALSE, repara=TRUE, forcebin=FALSE, lm.approx=TRUE, disp=c("add","mult"), overall.effect=NULL, overall.loglr=NULL, cxx=TRUE, smoothing=TRUE, cyclespin=TRUE, reverse=TRUE, maxlogLR=NULL, set.fitted.g=NULL, set.fitted.g.intercept=NULL, get.fitted.g=TRUE, listy=NULL, verbose=FALSE, ashparam=list()){
+  disp=match.arg(disp)
+  
+  if(!is.null(g)) if(!(is.numeric(g)|is.factor(g))) stop("Error: invalid parameter 'g', 'g' must be numeric or factor or NULL")
+  if(!is.logical(center)) stop("Error: invalid parameter 'center', 'center' must be bool")#need this
+  if(!((baseline == "inter") | (baseline=="grp") | is.numeric(baseline))) stop("Error: invalid parameter 'baseline', 'baseline' can be a number or 'inter' or 'grp'")
+  if(center == FALSE & baseline == "inter") baseline = "grp"
+  if(!is.logical(reflect)) stop("Error: invalid parameter 'reflect', 'reflect' must be bool")
+  if(!(((minobs%%1)==0) & minobs>0)) stop("Error: invalid parameter 'minobs', 'minobs' must be positive integer")
+  if(!(is.numeric(pseudocounts) & pseudocounts>0)) stop("Error: invalid parameter 'pseudocounts', 'pseudocounts' must be a positive number")
+  if(!is.logical(all)) stop("Error: invalid parameter 'all', 'all'  must be bool")
+  if(!is.logical(repara)) stop("Error: invalid parameter 'repara', 'repara'  must be bool")
+  if(!is.logical(forcebin)) stop("Error: invalid parameter 'forcebin', 'forcebin'  must be bool")
+  if(!is.logical(lm.approx)) stop("Error: invalid parameter 'lm.approx', 'lm.approx'  must be bool")
+  if(!is.element(disp,c("add","mult"))) stop("Error: invalid parameter 'disp', 'disp'  must be either 'add' or 'mult' ")
+  ashparam=setAshParam(ashparam)
+  ashparam.fitted.g = ashparam
+  ashparam.fitted.g.intercept = ashparam
+  if (!is.null(set.fitted.g)) ashparam.fitted.g$fixg = TRUE
+  if (!is.null(set.fitted.g.intercept)) ashparam.fitted.g.intercept$fixg = TRUE
+  if (!smoothing) reverse = FALSE
+  if (!cyclespin) {reverse = FALSE; warning("Reversing wavelet not implemented here when cyclespin=FALSE, setting reverse=FALSE")}
+  if(!is.null(overall.loglr)) if(!(is.numeric(overall.loglr) & length(overall.loglr) == 1)) stop("Error: invalid parameter 'overall.loglr', 'overall.loglr' must be numeric or NULL")
+  if(!is.null(overall.effect)) if(!(is.numeric(overall.effect) & length(overall.effect) == 2)) stop("Error: invalid parameter 'overall.effect', 'overall.effect' must be numeric or NULL")
+  #to do: check other input parameters
+  
+  
+  if(is.null(x)&is.null(listy)) stop("Error: no data provided. Specify x (or listy)")
+  if(is.null(listy)){
+    if(!is.numeric(x)) stop("Error: invalid parameter 'x': 'x' must be numeric")
+    if(is.vector(x)) dim(x) = c(1,length(x)) #change x to matrix
+    nsig = nrow(x)
+    if(!is.null(read.depth)){
+      if(length(read.depth) != nsig) stop("Error: read depths for all samples are not provided")
+      if(!all(read.depth >= apply(x,1,sum))) stop("Error: read depths must exceed total counts!")
+    }
+    if(!is.null(g)) if(length(g) != nsig) stop("Error: covariate g for all samples are not provided")
+    if(nsig == 1) forcebin = TRUE #if only one observation, don't allow overdispersion
+    J = log2(ncol(x)); if((J%%1) != 0) reflect=TRUE #if ncol(x) is not a power of 2, reflect x
+    if(reflect == TRUE) reflect.indices = reflectSignal(x) #reflect signal; this function is pseudo calling x by reference
+    n = ncol(x)
+    J = log2(n)
+  }else{
+    nsig = nrow(listy$y)
+    J = length(listy$intervals)-1
+    print(paste("J =",J))
+    if(is.null(g)) stop("Error: specify argument g to multiseq")
+    if(length(g) != nsig) stop("Error: arguments g and listy not compatible")
+  }
+  if(!is.null(g)){
+    if(is.factor(g))
+      g.num = as.numeric(levels(g))[g]
+    else{
+      g.num = g
+      if(length(unique(g)) == 2)
+        g = factor(g)
+    }
+  }
+  
+  fitted.g=list()
+  fitted.g.intercept=list()
+  logLR=NULL
+  sumlogLR=NULL
+  finite.logLR=NULL
+  #estimate of ratio of overall intensities in different groups if sequencing depth is present
+  if(is.null(g)){
+    if(is.null(listy)){
+      if(reverse){
+        #define res.rate the (log) total number of counts
+        if(is.null(read.depth))
+          res.rate = list(lp.mean=log(mean(rowSums(x))), lp.var=0)
+        else
+          res.rate = list(lp.mean=log(mean(rowSums(x/(read.depth%o%rep(1,n))))), lp.var=0)
+      }
+    }
+  }else{
+    if(is.null(listy)){
+      if(reverse){
+        #weights for quantitative covariate
+        if(center == TRUE){
+          w = unique(sort(g.num-mean(g.num)))
+        }else{
+          w = c(0,1)
+        }
+      }
+      
+      #compute mean and variance of the baseline overall intensity(used in reconstructing the baseline estimate later)    
+      xRowSums = rowSums(x)
+    }
+    if (is.null(read.depth)){#if sequencing depth is not present then obtain total intensities and ratio of total intensities by taking sums of total intensities in each group
+      if (is.null(listy))
+        y.rate = xRowSums
+      else
+        y.rate = listy$y.rate
+      if(smoothing | get.fitted.g){
+        #below lm.approx=FALSE in which case disp doesn't matter
+        y.rate[y.rate==0] = 0.5
+        zdat.rate = as.vector(t(summary(suppressWarnings(glm(y.rate ~ g, family="poisson")))$coef[1:2,1:2]))
+        zdat.rate.ash = withCallingHandlers(do.call(ash, c(list(betahat=zdat.rate[3], sebetahat=zdat.rate[4], g=set.fitted.g[[J+1]]), ashparam.fitted.g)), warning=suppressW)
+        if (get.fitted.g)
+          fitted.g[[J+1]] = zdat.rate.ash$fitted.g
+        if (ashparam$pointmass) #compute logLR
+          logLR[J+1] = zdat.rate.ash$logLR
+        if(reverse)
+          res.rate = list(lp.mean=zdat.rate[1], lp.var=0, lpratio.mean=zdat.rate[3], lpratio.var=0)
+      }
+    }else{
+      ##run glm.approx to get zdat.rate
+      #consider the raw data as binomial counts from a given total number of trials (sequencing depth)
+      if (is.null(listy))
+        y.rate = matrix(c(xRowSums, read.depth-xRowSums), ncol=2)
+      else
+        y.rate = listy$y.rate
+      if (smoothing | get.fitted.g){
+        zdat.rate = as.vector(glm.approx(y.rate, g=g, center=center, repara=repara, lm.approx=lm.approx, disp=disp, bound=0))
+        zdat.rate.ash = withCallingHandlers(do.call(ash, c(list(betahat=zdat.rate[3], sebetahat=zdat.rate[4], g=set.fitted.g[[J+1]]), ashparam.fitted.g)), warning=suppressW)
+        if (get.fitted.g)
+          fitted.g[[J+1]] = zdat.rate.ash$fitted.g
+        if (ashparam$pointmass) #compute logLR 
+          logLR[J+1] = zdat.rate.ash$logLR
+        if (reverse)
+          res.rate = compute.res.rate(zdat.rate, repara, baseline, w, read.depth, g)
+      }
+    }
+  }
+  ##run glm.approx to get zdat
+  #compute y
+  if (is.null(listy)){
+    if (cyclespin){
+      #create the parent TI table for each signal, and putfitted.g[[J+1]] = zdat.rate.ash$fitted.g  into rows of matrix y
+      if (cxx==FALSE){
+        y = matrix(nrow=nsig, ncol=2*J*n); for(i in 1:nsig){tt = ParentTItable(x[i,]); y[i,] = as.vector(t(tt$parent))}        
+      }else
+        y = cxxParentTItable(x)
+    }else{
+      y = haar.aggregate(x)
+      intervals = c(0,sapply(J:1, function(x){2^x}))
+    }
+  }else{
+    y = listy$y
+    intervals = listy$intervals
+  }
+  
+  if (!smoothing)
+    return(list(y.rate=y.rate, y=y))
+  else{
+    baseline.mean=baseline.var=effect.mean=effect.var=NULL
+    #output the estimates for intercept and slope (if applicable) as well as their standard errors (and gamma as in documentation if reparametrization is used)
+    zdat = glm.approx(y, g, minobs=minobs, pseudocounts=pseudocounts, center=center, all=all, forcebin=forcebin, repara=repara, lm.approx=lm.approx, disp=disp)
+    # loop through resolutions, smoothing each resolution separately using ash
+    # compute.res returns posterior means and variances of log(p), log(q), log(p0/p1) and log(q0/q1) as lp, lq,lpratio and lqratio, respectively, where p
+    # is the probability of going left, q=1-p.
+    res=list()
+    for(j in J:1){
+      if (cyclespin){
+        spins = 2^j
+        ind = ((j-1)*n+1):(j*n)
+      }else{ #just get fitted.g using ash 
+        spins = 1
+        ind = (intervals[j]+1):intervals[j+1]
+      }
+      if (!is.null(g)){
+        if(min(sum(!is.na(zdat[3,ind])), sum(!is.na(zdat[4,ind]))) > 0){ # run ash when there is at least one WC.
+          zdat.ash = withCallingHandlers(do.call(ash,c(list(betahat=zdat[3,ind], sebetahat=zdat[4,ind], g=set.fitted.g[[j]]), ashparam.fitted.g)), warning=suppressW)
+          if (get.fitted.g)
+            fitted.g[[j]] = zdat.ash$fitted.g
+          if (ashparam$pointmass)
+            logLR[j] = zdat.ash$logLR/spins
+        }else{
+          if(j == J){
+            #if (get.fitted.g)
+            #    fitted.g[[j]] = zdat.ash$fitted.g
+            if (ashparam$pointmass)
+              logLR[j] = NA
+          }else{
+            if (ashparam$pointmass)
+              logLR[j] = 0
+            
+          }
+        }
+      }
+      if (smoothing | get.fitted.g){
+        if(min(sum(!is.na(zdat[1,ind])), sum(!is.na(zdat[2,ind]))) > 0){ # run ash when there is at least one WC.
+          zdat.ash.intercept = withCallingHandlers(do.call(ash, c(list(betahat=zdat[1,ind], sebetahat=zdat[2,ind], g=set.fitted.g.intercept[[j]]), ashparam.fitted.g.intercept)), warning=suppressW)
+          if (get.fitted.g)
+            fitted.g.intercept[[j]] = zdat.ash.intercept$fitted.g
+          if (reverse){
+            if (is.null(g))
+              res.j = compute.res(zdat.ash.intercept, repara)
+            else
+              res.j = compute.res(zdat.ash.intercept, repara, baseline, w, g, zdat[,ind], zdat.ash)
+            res=rbindlist(list(res.j,res))
+          }
+        }else{
+          if(j == J){
+            if(is.null(g))
+              res.j = list(lp.mean=rep(NA,n), lp.var=rep(NA,n), lq.mean=rep(NA,n), lq.var=rep(NA,n), lp.prior.mean=rep(NA,n), lp.prior.var=rep(NA,n), lq.prior.mean=rep(NA,n), lq.prior.var=rep(NA,n))
+            else
+              res.j = list(lp.mean=rep(NA,n), lp.var=rep(NA,n), lq.mean=rep(NA,n), lq.var=rep(NA,n), lpratio.mean=rep(NA,n), lpratio.var=rep(NA,n), lqratio.mean=rep(NA,n), lqratio.var=rep(NA,n), lp.prior.mean=rep(NA,n), lp.prior.var=rep(NA,n), lq.prior.mean=rep(NA,n), lq.prior.var=rep(NA,n), lpratio.prior.mean=rep(NA,n), lpratio.prior.var=rep(NA,n), lqratio.prior.mean=rep(NA,n), lqratio.prior.var=rep(NA,n))                  
+            res=rbindlist(list(res.j,res))
+          }else{
+            if(is.null(g))
+              res.j = list(lp.mean=res.j$lp.prior.mean, lp.var=res.j$lp.prior.var, lq.mean=res.j$lq.prior.mean, lq.var=res.j$lq.prior.var, lp.prior.mean=res.j$lp.prior.mean, lp.prior.var=res.j$lp.prior.var, lq.prior.mean=res.j$lq.prior.mean, lq.prior.var=res.j$lq.prior.var)
+            else
+              res.j = list(lp.mean=res.j$lp.prior.mean, lp.var=res.j$lp.prior.var, lq.mean=res.j$lq.prior.mean, lq.var=res.j$lq.prior.var, lpratio.mean=res.j$lpratio.prior.mean, lpratio.var=res.j$lpratio.prior.var, lqratio.mean=res.j$lqratio.prior.mean, lqratio.var=res.j$lqratio.prior.var, lp.prior.mean=res.j$lp.prior.mean, lp.prior.var=res.j$lp.prior.var, lq.prior.mean=res.j$lq.prior.mean, lq.prior.var=res.j$lq.prior.var, lpratio.prior.mean=res.j$lpratio.prior.mean, lpratio.prior.var=res.j$lpratio.prior.var, lqratio.prior.mean=res.j$lqratio.prior.mean, lqratio.prior.var=res.j$lqratio.prior.var)                  
+            res=rbindlist(list(res.j,res))
+          }
+        }
+      }            
+    }
+    
+    if (!is.null(overall.loglr)){
+      logLR[J+1] = overall.loglr
+    }        
+    
+    if (ashparam$pointmass){
+      sumlogLR = sum(logLR) # combine logLR from different scales
+      finite.logLR = is.finite(sumlogLR); if((!finite.logLR) & (!is.null(maxlogLR))) sumlogLR = maxlogLR  # check if logLR is infinite; if logLR is infite and maxlogLR is provided, we will return maxlogLR istead of infinite.
+    }
+    
+    #reconstructs baseline and (if applicable) effect estimate from the "wavelet" space, taking into account the different scenarios for g
+    if (reverse){
+      #if(cxx==FALSE){
+      #baseline.mean = reverse.pwave(res.rate$lp.mean, matrix(res$lp.mean, J, n, byrow=TRUE), matrix(res$lq.mean, J, n, byrow=TRUE))
+      baseline.mean = reverse.pwave(res.rate$lp.mean, matrix(res$lp.mean, J, n, byrow=TRUE))
+      baseline.var = reverse.pwave(res.rate$lp.var, matrix(res$lp.var, J, n, byrow=TRUE), matrix(res$lq.var, J, n, byrow=TRUE))
+      #baseline.var = reverse.pwave(res.rate$lp.var, matrix(res$lp.var, J, n, byrow=TRUE))
+      #}else{
+      #    #baseline.mean = cxxreverse_pwave(res.rate$lp.mean, matrix(res$lp.mean, J, n, byrow=TRUE), matrix(res$lq.mean, J, n, byrow=TRUE))
+      #    #baseline.var = cxxreverse_pwave(res.rate$lp.var, matrix(res$lp.var, J, n, byrow=TRUE), matrix(res$lq.var, J, n, byrow=TRUE))
+      #    baseline.mean = cxxreverse_pwave(res.rate$lp.mean, matrix(res$lp.mean, J, n, byrow=TRUE))
+      #    baseline.var = cxxreverse_pwave(res.rate$lp.var, matrix(res$lp.var, J, n, byrow=TRUE))
+      #}
+      
+      if (is.null(g)){#if g is null then simply take the total intensity to be (log) total counts
+        effect.mean = NULL
+        effect.var = NULL
+      }else{
+        if(!is.null(overall.effect)){ # if user provides mean and varaince.
+          res.rate$lpratio.mean = overall.effect[1] 
+          res.rate$lpratio.var = overall.effect[2]
+        }
+        if(cxx==FALSE){
+          effect.mean = reverse.pwave(res.rate$lpratio.mean, matrix(res$lpratio.mean, J, n, byrow=TRUE), matrix(res$lqratio.mean, J, n, byrow=TRUE))
+          effect.var = reverse.pwave(res.rate$lpratio.var, matrix(res$lpratio.var, J, n, byrow=TRUE), matrix(res$lqratio.var, J, n, byrow=TRUE))
+        }else{
+          effect.mean = cxxreverse_pwave(res.rate$lpratio.mean, matrix(res$lpratio.mean, J, n, byrow=TRUE), matrix(res$lqratio.mean, J, n, byrow=TRUE))
+          effect.var = cxxreverse_pwave(res.rate$lpratio.var, matrix(res$lpratio.var, J, n, byrow=TRUE), matrix(res$lqratio.var, J, n, byrow=TRUE))
+        }
+      }
+      if(reflect==TRUE){
+        baseline.mean = baseline.mean[reflect.indices]
+        baseline.var = baseline.var[reflect.indices]
+        effect.mean = effect.mean[reflect.indices]
+        effect.var = effect.var[reflect.indices]
+      }
+    }
+  }
+  if (verbose){
+    result <- list(baseline.mean=baseline.mean, baseline.var=baseline.var, effect.mean=effect.mean, effect.var=effect.var, logLR=list(value=sumlogLR, scales=logLR, isfinite=finite.logLR), fitted.g=fitted.g, fitted.g.intercept=fitted.g.intercept)
+  }else{
+    result <- list(baseline.mean=baseline.mean, baseline.var=baseline.var, effect.mean=effect.mean, effect.var=effect.var, logLR=list(value=sumlogLR, isfinite=finite.logLR))
+  }
+  return(structure(result, class="multiseq"))
 }
 
 

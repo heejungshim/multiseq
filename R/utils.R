@@ -313,11 +313,10 @@ plot.multiseq <- function(x, is.xaxis=TRUE, threshold=2, what="effect", highligh
         ylab=""
     par(mgp=c(0,1,0))
     
-    plot(1,1,
+    plot(y,
          type="n",
          ylim=ylim,
          main=main,
-         #col=paste("dark",col),
          xlab=xlab,
          ylab=ylab,
          axes=axes)

@@ -4,13 +4,7 @@
 \alias{get.intervals}
 \title{Print intervals where \code{\link{multiseq}} found strong effect or strong peaks.}
 \usage{
-get.intervals(
-  res,
-  z.threshold = 2,
-  p.threshold = 1e-09,
-  region = NULL,
-  what = "effect"
-)
+get.intervals(res, threshold = 2, region = NULL)
 }
 \arguments{
 \item{res:}{\code{\link{multiseq}} output.}

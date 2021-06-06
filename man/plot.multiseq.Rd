@@ -30,17 +30,23 @@
 
 \item{what:}{a string, it can be either "baseline" or "log_baseline" or "effect".}
 
-\item{highlight:}{a bool, if TRUE highlight areas with strong signal; defaults to TRUE}
+\item{highlight:}{a bool, if TRUE, highlight areas with strong signal when what == "effect"; defaults to TRUE;}
 }
 \description{
-If `what=="effect"` this function will plot the effect and intervals where \code{\link{multiseq}} found strong effect, i.e., when zero is outside of +/- \code{z.threshold} * posterior standard deviation). If  `what=="baseline"` or `what=="log_baseline"` this function will plot either the baseline \code{exp(res$baseline.mean)} or the log of the baseline \code{res$baseline.mean}, respectively, and  intervals where \code{\link{multiseq}} found strong peaks at a specified threshold, i.e., when log(p.threshold) is below +/- \code{z.threshold} * posterior standard deviation of the log baseline. If x$region is defined then the \code{x} axis will use genomic coordinates.
+If `what=="effect"` this function will plot the posterior mean (sold line) for effect size,
+ i.e., the difference in log-intensity between groups, and +/- \code{threshold} `*` posterior standard deviations (dotted line). 
+ If `what=="effect"` and `highlight==TRUE`, this function will highlight areas with strong effects (i.e., zero is 
+ outside of the interval constructed by the two dotted lines). If  `what=="baseline”`, this function will plot the posterior mean 
+ for the baseline \code{exp(res$baseline.mean)}. If `what=="log_baseline”`, this function will plot the posterior mean 
+ for the log of the baseline \code{res$baseline.mean}, and +/- \code{threshold} `*`` posterior standard deviations. 
+ If x$region is defined then the \code{x} axis will use genomic coordinates.
 }
 \examples{
 \dontrun{
-data(dat, package="multiseq")
-res <- multiseq(x=dat$x, g=dat$g, minobs=1, lm.approx=FALSE, read.depth=dat$read.depth)
-res$region <- dat$region
-plot(res)
+data(chr17.10160989.10162012.DNase.seq, package="multiseq")
+res <- multiseq(x=chr17.10160989.10162012.DNase.seq$x, g=chr17.10160989.10162012.DNase.seq$g)
+res$region <- chr17.10160989.10162012.DNase.seq$region
+plot(res, threshold = 3)
 plot(res, what="baseline")
 }
 }

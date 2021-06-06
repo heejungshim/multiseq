@@ -239,21 +239,27 @@ plot.transcripts <- function(Transcripts, region=NULL, is.xaxis=TRUE, axes=F, xl
 
 #' @title Plot the output of \code{\link{multiseq}} (either the effect or the baseline).
 #'
-#' @description If `what=="effect"` this function will plot the effect and intervals where \code{\link{multiseq}} found strong effect, i.e., when zero is outside of +/- \code{z.threshold} * posterior standard deviation). If  `what=="baseline"` or `what=="log_baseline"` this function will plot either the baseline \code{exp(res$baseline.mean)} or the log of the baseline \code{res$baseline.mean}, respectively, and  intervals where \code{\link{multiseq}} found strong peaks at a specified threshold, i.e., when log(p.threshold) is below +/- \code{z.threshold} * posterior standard deviation of the log baseline. If x$region is defined then the \code{x} axis will use genomic coordinates.
-#' 
+#' @description If `what=="effect"` this function will plot the posterior mean (sold line) for effect size,
+#'  i.e., the difference in log-intensity between groups, and +/- \code{threshold} `*` posterior standard deviations (dotted line). 
+#'  If `what=="effect"` and `highlight==TRUE`, this function will highlight areas with strong effects (i.e., zero is 
+#'  outside of the interval constructed by the two dotted lines). If  `what=="baseline”`, this function will plot the posterior mean 
+#'  for the baseline \code{exp(res$baseline.mean)}. If `what=="log_baseline”`, this function will plot the posterior mean 
+#'  for the log of the baseline \code{res$baseline.mean}, and +/- \code{threshold} `*`` posterior standard deviations. 
+#'  If x$region is defined then the \code{x} axis will use genomic coordinates.
+#'  
 #' @param x: multiseq output; if x$region is defined then the \code{x} axis will use genomic coordinates.
 #' @param is.xaxis: bool, if TRUE plot \code{x} axis otherwise don't plot \code{x} axis.
 #' @param threshold: a multiplier of the standard deviation.
 #' @param what: a string, it can be either "baseline" or "log_baseline" or "effect".
-#' @param highlight: a bool, if TRUE highlight areas with strong signal; defaults to TRUE
+#' @param highlight: a bool, if TRUE, highlight areas with strong signal when what == "effect"; defaults to TRUE; 
 #' @export
 #' @examples
 #'\dontrun{
-#' data(dat, package="multiseq")
-#' res <- multiseq(x=dat$x, g=dat$g, minobs=1, lm.approx=FALSE, read.depth=dat$read.depth)
-#' res$region <- dat$region
-#' plot(res)
-#' plot(res, what="baseline")
+#'data(chr17.10160989.10162012.DNase.seq, package="multiseq")
+#'res <- multiseq(x=chr17.10160989.10162012.DNase.seq$x, g=chr17.10160989.10162012.DNase.seq$g)
+#'res$region <- chr17.10160989.10162012.DNase.seq$region
+#'plot(res, threshold = 3)
+#'plot(res, what="baseline")
 #' }
 plot.multiseq <- function(x, is.xaxis=TRUE, threshold=2, what="effect", highlight=TRUE, axes=F, type="l", col="blue", main=NULL, ylim=NULL, xlab=NULL, ylab=NULL, cex=NULL, ...){
     if ((is.null(x$baseline.mean) | is.null(x$baseline.var)) & what=="baseline")
@@ -531,7 +537,7 @@ get.intervals.utils <- function(mean, var, what, z.threshold, p.threshold, regio
     toreturn$end         <- end
     toreturn$sign        <- sign
     toreturn$z.threshold <- z.threshold
-    toreturn$type        <- type
+    #toreturn$type        <- type
     
     return(toreturn)
 }
@@ -563,27 +569,65 @@ get.intervals.utils <- function(mean, var, what, z.threshold, p.threshold, regio
 #' res <- multiseq(x=dat$x, g=dat$g, minobs=1, lm.approx=FALSE, read.depth=dat$read.depth)
 #' get.intervals(res, what="effect", region=dat$region)
 #' }
-get.intervals <- function(res, z.threshold=2, p.threshold=1e-09, region=NULL, what="effect"){
+get.intervals <- function(res, threshold=2, region=NULL){
     if (is.null(region))
         if (!(is.null(res$region)))
             region=res$region
     
-    if (what=="baseline" | what=="log_baseline"){
-        if (is.null(res$baseline.mean) | is.null(res$baseline.var)){
-            stop("no baseline in multiseq output res") 
-        }else{
-            get.intervals.utils(res$baseline.mean, res$baseline.var, what, z.threshold, log(p.threshold), region)
-        }
-    }else if (what=="effect"){
-        if (is.null(res$effect.mean) | is.null(res$effect.var)){
-            stop("no effect in multiseq output res")
-        }else{
-            get.intervals.utils(res$effect.mean, res$effect.var, what, z.threshold, p.threshold=0, region)
-        }
+    if (is.null(res$effect.mean) | is.null(res$effect.var)){
+        stop("no effect in multiseq output res")
     }else{
-        stop("ERROR: invalid parameter 'what'")
+        get.intervals.utils(res$effect.mean, res$effect.var, "effect", threshold, p.threshold=0, region)
     }
 }
+
+
+#' @title Print intervals where \code{\link{multiseq}} found strong effect or strong peaks. 
+#'
+#' @description If \code{what=="effect"} this function will print intervals where \code{\link{multiseq}} found strong effect, i.e., when zero is outside of +/- \code{z.threshold} * posterior standard deviation). If  \code{what=="baseline"} or \code{what=="log_baseline"}  this function will print intervals where \code{\link{multiseq}} found strong peaks at a specified threshold, i.e.,  when p.threshold is below +/- \code{z.threshold} * posterior standard deviation of the log baseline.
+#'
+#' @return This function returns a list with elements \cr
+#' \item{chr}{a string specifying the sequence}
+#' \item{start}{a vector specifying the start of each interval}
+#' \item{end}{a vector specifying the end of each interval}
+#' \item{sign}{can be "+" or "-" and indicates the sign of the effect or is always positive when \code{what="baseline"}} 
+#' \item{z.threshold}{multiplier of the standard deviation}
+#' \item{p.threshold}{threshold for peak detection} 
+#' \item{type}{where \code{type} is either "local" - if \code{res$region} or \code{region} are not specified - or "sequence" otherwise.}
+#' Output interval is in \code{bed} format (\code{start} is 0-based, \code{end} is 1-based).
+#' @param res: \code{\link{multiseq}} output.
+#' @param z.threshold: a multiplier of the standard deviation; default is 2
+#' @param p.threshold: this argument is only used when \code{what=="baseline"} or \code{what=="log_baseline"} to specify a threshold for the detection of peaks: if \code{res$baseline.mean-z.threshold*sqrt(baseline.var)>log(p.threshold)} then a peak is called; default is 1e-09.
+#' @param region: a string specifying a genomic region: reference sequence name, start position, end position; defaults to NULL; if provided, the function will output the interval in genomic coordinates.
+#' @param what: a string, it can be either "baseline" or "log_baseline" or "effect"; default is "effect"
+#' @examples
+#'\dontrun{
+#' data(dat, package="multiseq")
+#' res <- multiseq(x=dat$x, g=dat$g, minobs=1, lm.approx=FALSE, read.depth=dat$read.depth)
+#' get.intervals(res, what="effect", region=dat$region)
+#' }
+get.intervals.old <- function(res, z.threshold=2, p.threshold=1e-09, region=NULL, what="effect"){
+  if (is.null(region))
+    if (!(is.null(res$region)))
+      region=res$region
+    
+    if (what=="baseline" | what=="log_baseline"){
+      if (is.null(res$baseline.mean) | is.null(res$baseline.var)){
+        stop("no baseline in multiseq output res") 
+      }else{
+        get.intervals.utils(res$baseline.mean, res$baseline.var, what, z.threshold, log(p.threshold), region)
+      }
+    }else if (what=="effect"){
+      if (is.null(res$effect.mean) | is.null(res$effect.var)){
+        stop("no effect in multiseq output res")
+      }else{
+        get.intervals.utils(res$effect.mean, res$effect.var, what, z.threshold, p.threshold=0, region)
+      }
+    }else{
+      stop("ERROR: invalid parameter 'what'")
+    }
+}
+
 
 
 #' @title Write effect intervals to a \code{bed} file.

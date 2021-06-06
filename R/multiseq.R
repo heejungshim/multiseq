@@ -300,7 +300,6 @@ compute.res <- function(zdat.ash.intercept, repara, baseline=NULL, w=NULL, g=NUL
 
 
 #' Set default \code{ash} parameters.
-#' @export
 #' @keywords internal 
 #' @param ashparam: a list of parameters to be passed to ash.
 setAshParam <- function(ashparam){

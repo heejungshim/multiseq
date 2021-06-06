@@ -543,33 +543,32 @@ get.intervals.utils <- function(mean, var, what, z.threshold, p.threshold, regio
 }
    
 
-
-#' @title Print intervals where \code{\link{multiseq}} found strong effect or strong peaks. 
+#' @title Provide information on areas with strong effects from \code{\link{multiseq}}.
 #'
-#' @description If \code{what=="effect"} this function will print intervals where \code{\link{multiseq}} found strong effect, i.e., when zero is outside of +/- \code{z.threshold} * posterior standard deviation). If  \code{what=="baseline"} or \code{what=="log_baseline"}  this function will print intervals where \code{\link{multiseq}} found strong peaks at a specified threshold, i.e.,  when p.threshold is below +/- \code{z.threshold} * posterior standard deviation of the log baseline.
+#' @description This function will provide information on areas with strong effects from \code{\link{multiseq}},
+#'  i.e., when zero is outside of the interval constructed by posterior mean +/- \code{threshold} * posterior standard 
+#'  deviation). 
 #'
 #' @return This function returns a list with elements \cr
-#' \item{chr}{a string specifying the sequence}
-#' \item{start}{a vector specifying the start of each interval}
-#' \item{end}{a vector specifying the end of each interval}
-#' \item{sign}{can be "+" or "-" and indicates the sign of the effect or is always positive when \code{what="baseline"}} 
-#' \item{z.threshold}{multiplier of the standard deviation}
-#' \item{p.threshold}{threshold for peak detection} 
-#' \item{type}{where \code{type} is either "local" - if \code{res$region} or \code{region} are not specified - or "sequence" otherwise.}
+#' \item{chr}{a string specifying the chromosome}
+#' \item{start}{a vector specifying the start of each area}
+#' \item{end}{a vector specifying the end of each area}
+#' \item{sign}{can be "+" or "-" and indicates the sign of the effect} 
+#' \item{threshold}{multiplier of the standard deviation}
 #' Output interval is in \code{bed} format (\code{start} is 0-based, \code{end} is 1-based).
 #' @param res: \code{\link{multiseq}} output.
-#' @param z.threshold: a multiplier of the standard deviation; default is 2
-#' @param p.threshold: this argument is only used when \code{what=="baseline"} or \code{what=="log_baseline"} to specify a threshold for the detection of peaks: if \code{res$baseline.mean-z.threshold*sqrt(baseline.var)>log(p.threshold)} then a peak is called; default is 1e-09.
+#' @param threshold: a multiplier of the standard deviation; default is 2
 #' @param region: a string specifying a genomic region: reference sequence name, start position, end position; defaults to NULL; if provided, the function will output the interval in genomic coordinates.
-#' @param what: a string, it can be either "baseline" or "log_baseline" or "effect"; default is "effect"
 #' @export
 #' @examples
 #'\dontrun{
-#' data(dat, package="multiseq")
-#' res <- multiseq(x=dat$x, g=dat$g, minobs=1, lm.approx=FALSE, read.depth=dat$read.depth)
-#' get.intervals(res, what="effect", region=dat$region)
+#'data(chr17.10160989.10162012.DNase.seq, package="multiseq")
+#'res <- multiseq(x=chr17.10160989.10162012.DNase.seq$x, g=chr17.10160989.10162012.DNase.seq$g)
+#'res$region <- chr17.10160989.10162012.DNase.seq$region
+#'plot(res, threshold = 4)
+#'get.areas.strong.effects(res, threshold = 4)
 #' }
-get.intervals <- function(res, threshold=2, region=NULL){
+get.areas.strong.effects <- function(res, threshold=2, region=NULL){
     if (is.null(region))
         if (!(is.null(res$region)))
             region=res$region

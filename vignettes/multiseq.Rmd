@@ -1,0 +1,214 @@
+---
+title: "multiseq demo"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{multiseq demo}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo = FALSE, message = FALSE}
+knitr::opts_chunk$set(collapse = TRUE,comment = "#",fig.align = "center",
+                      fig.cap = "&nbsp;",dpi = 120,results = "hold")
+```
+
+The multiseq R package implements multiscale Poisson process approaches for differential or association analysis of high-throughput sequencing data. Key features that distinguishe multiseq from typical differential or association analysis is to 1) better exploit high-resolution information in the high-throughput sequencing data, and 2) directly model the count nature of the data (see Shim et al., 2021 for details of the motivations, approaches, and comparison results). 
+
+Assume that we have high-throughput sequencing data from $N$ samples across a genomic region divided into $B$ equal bins. Specifically, the data consist of the ``read counts" in each sample that map to each bin. The choice of bin-width constitutes a trade-off between computation and resolution. For example, the highest possible resolution of analysis would be at the single base level: each bin would be of length 1bp. However, computation could be reduced -- typically by a factor of >10 -- by using bins of length 10bp. Let $x^{i}_b$ denote the read count for sample $i$ in bin $b$. We also assume that a covariate $g^i$ is measured on each sample $i$. The covariate is either a binary group membership (for differential analysis) or continuous. We model the read counts as arising from an inhomogeneous Poisson process:
+$$
+x^i_b \sim \text{Pois}(\lambda^i_b)
+$$
+We use the multiseq methods to 1) estimate the effect of $g$ on $\log\lambda_b$ and 2) test for association (or difference for a binary $g$) between $g$ and $\log\lambda$. Here we present a brief demonstration of the methods.
+
+## Set up environment
+
+We begin by loading the multiseq and ashr packages.
+```{r load-pkgs, message=FALSE}
+library(multiseq)
+library(ashr)
+```
+
+## Simulated data
+
+In this section, we first simulate data set using the procedure described in Shim et al., 2021, and then apply the multiseq method to the simulated data. Shim et al., 2021 simulates data by subsampling reads from DNase-seq data (see Shim et al., 2021 for the detailed description). We first load the DNase-seq data on chr17:10160989-10162012.
+```{r}
+data(chr17.10160989.10162012.DNase.seq, package="multiseq")
+```
+
+
+Using the DNase-seq data in this region, we will simulate a data set with $N$ = 10 and expected library read depth = 39 M $\times$ 2. The data set has two groups of samples (5 vs 5), and non-zero difference over 10161438-10161658. 
+```{r}
+total.count = as.numeric(apply(chr17.10160989.10162012.DNase.seq$x, 2, sum))
+
+# two groups of samples (5 vs 5)
+g = c(rep(0,5), rep(1,5))
+
+# expected library read depth = 39 M X 2
+read.depth.ratio = 2
+if(!is.null(read.depth.ratio)){
+  total.count = floor(total.count*read.depth.ratio)
+}
+
+numSam = length(g)
+numBPs = length(total.count)
+
+# non-zero difference over 10161438-10161658
+eff = rep(1, 1024)
+eff[450:670] = 2
+mu0.sig = 2/70/(1+eff)
+mu1.sig = 2*eff/70/(1+eff)
+```
+
+
+The simulation procedure described in Shim et al., 2021 has been implemented in `sample.from.Binomial.with.Overdispersion` function.
+```{r}
+# simulated data will be saved here
+x = matrix(data=NA, nr= numSam, nc = numBPs)
+
+# set seed
+set.seed(1111)
+
+# group 0
+wh0 = which(g == 0)
+if(length(wh0) > 0){
+    x[wh0,] = sample.from.Binomial.with.Overdispersion(num.sam = length(wh0), total.count = total.count, mu.sig = mu0.sig)
+}
+
+# group 1
+wh1 = which(g == 1)
+if(length(wh1) > 0){
+    x[wh1,] = sample.from.Binomial.with.Overdispersion(num.sam = length(wh1), total.count = total.count, mu.sig = mu1.sig)
+}
+```
+
+
+Let's apply the multiseq method to `x` and `g`.
+```{r}
+res.sim <- multiseq(x=x, g=g)
+
+# test statistic for association analysis
+res.sim$logLR$value
+```
+
+
+We can visualize the effect size using the function `plot`. We will highlight areas with strong effects (i.e., zero is outside of the interval constructed by the posterior mean $\pm$ `threshold` $\times$ posterior standard deviation). We also visualize the average read counts for each group. We obtain the smoothed average read counts using `multiseq` function. 
+```{r fig.height = 3, fig.width = 5, fig.align = "center"}
+# smoothed average read counts for group 0
+res.sim.0 <- multiseq(x=x[1:5,])
+# smoothed average read counts for group 1
+res.sim.1 <- multiseq(x=x[6:10,])
+
+par(mfrow=c(2,1), oma = c(0,0,0,0) + 0.1, mar = c(2,2,1,2), mgp=c(0,1,0))
+# visualize the smoothed average read counts for each group
+plot(1:1024, exp(res.sim.1$baseline.mean),type="l", col = "navy", ylab = "", xlab="")
+points(1:1024, exp(res.sim.0$baseline.mean), type="l", col ="orange")
+# visualize area with true non-zero difference using dark green color
+points(450:670,rep(0.01,670-450+1), col="dark green")
+# visualize the effect size from multiseq; highlight areas with strong effects (i.e., zero is outside of the interval constructed by the posterior mean +/-2xposterior standard deviation).
+plot(res.sim, threshold=2, is.xaxis=TRUE)
+```
+
+
+Also, we can obtain the information on the area with strong effect using the `get.areas.strong.effects` function. 
+```{r}
+get.areas.strong.effects(res.sim, threshold=2)
+```
+multiseq identified the area with true signal well.
+
+
+## ATAC-seq data on chr1:568739-569762 from Shim et al., 2021
+
+In this section, we apply multiseq to ATAC-seq data on chr1:568739-569762 from Shim et al. 2021 and reproduce the effect size, test statistic (logLR), and p-value in Figure 3 of Shim et al. 2021. We first load the ATAC-seq data on chr17:10160989-10162012 and relevant information:
+```{r}
+data(chr1.568739.569762.ATACseq, package="multiseq")
+?chr1.568739.569762.ATACseq
+str(chr1.568739.569762.ATACseq)
+```
+
+
+`chr1:568739-569762$x` is a 6 by 1024 matrix of ATAC-seq read counts. [multiseq_Shim_et_al github repository](https://github.com/heejungshim/multiseq_Shim_et_al) provides a script to obtain this matrix from [the hdf5 files]() - extracting ATAC-seq read counts on chr1:568739-569762 (for three copper treated samples and three media control samples) from the hdf5 files and doing data-preprocessing as described in Shim et al. 2021. `chr1:568739.569762` provides the log likelihood ratio (`overall.logLR`), effect size estimate (`effect size`), and its variance (`overall.effect.var`) for overall expression which we computed using DESeq2 output. We will incorporate them into the multiseq to model the effect of $g$ on the overall expression. `logLR` in Figure 3 of Shim et al. 2021 has been reproduced. 
+```{r}
+# 1 for copper samples and 0 for control samples
+g = c(1,1,1,0,0,0)
+
+# Incorporate overall.logLR, effect size, overall.effect.var into the multiseq to model the effect of g on the overall expression.
+res.ATACseq          <- multiseq(x=chr1.568739.569762.ATACseq$x, g=g, overall.loglr = chr1.568739.569762.ATACseq$overall.logLR, overall.effect = c(chr1.568739.569762.ATACseq$overall.effect, chr1.568739.569762.ATACseq$overall.effect.var))
+
+# test statistic for differential analysis
+obs.statistic = res.ATACseq$logLR$value
+obs.statistic
+```
+
+
+We visualize the effect size using the function `plot`. The effect size in Figure 3 of Shim et al. 2021 has been reproduced. 
+```{r fig.height = 3, fig.width = 6, fig.align = "center"}
+res.ATACseq$region   <- chr1.568739.569762.ATACseq$region
+plot(res.ATACseq, threshold=2.6, is.xaxis=TRUE)
+```
+
+
+We applied multiseq to two controls (media vs. ethanol) for the 242,714 regions in Shim et al. 2021 and the resulting 242,714 test statistics have been saved in `ATACseq.multiseq.stat.null`. To reproduce the p-value in Figure 3 of Shim et al 2021, we load `ATACseq.multiseq.stat.null`. 
+```{r}
+data(ATACseq.multiseq.stat.null, package="multiseq")
+```
+
+
+The two controls are expected to have no differences in chromatin accessibility. Thus, we can construct the empirical null distribution of the multiseq test statistic using the 242,714 test statistics in `ATACseq.multiseq.stat.null`. We can compute a p-value for each observed test statistic using the function `get.pvalue.from.empirical.null.dist`. This function uses a randomization technique to produce continuous p-values that are uniformly distributed under the null, leading to the accurate estimation of FDR in the 'qvalue' package. See `?get.pvalue.from.empirical.null.dist` for the details of the randomization technique. 
+```{r}
+pval = get.pvalue.from.empirical.null.dist(ATACseq.multiseq.stat.null, obs.statistic, seed=149)
+pval
+```
+This p-value is slightly different from the p-value in Figure 3 of Shim et al 2021 due to the randomization technique. The function `get.pvalue.from.empirical.null.dist` can compute p-values for multiple observed test statistics. 
+```{r}
+pval2 = get.pvalue.from.empirical.null.dist(ATACseq.multiseq.stat.null,c(obs.statistic, 0.1), seed=149)
+pval2
+```
+
+
+## RAN-seq data on the gene OAS1 for splicingQTL analysis from Pickrell et al. 2010.
+
+In this section, we apply multiseq to RNA-seq data on the gene OAS1 (chr12:113354417-113358512) to test for association with genotypes at SNP `rs10774671`. The SNP `rs10774671` was found to be associated with splicing in the gene OAS1 (see Figure 3 in Pickrell et al. 2010). We first load the RAN-seq data and relevant information:
+```{r}
+data(OAS1, package="multiseq")
+```
+
+Let's apply the multiseq method to the RNA-seq data (`x`) and genotype data (`g`). We provide library read depth (`read.depth`) in the function. 
+```{r}
+res.RNAseq <- multiseq(x=OAS1$x, g=OAS1$g, minobs=50, read.depth=OAS1$read.depth, lm.approx = FALSE)
+
+# test statistic for association analysis
+res.RNAseq$logLR$value
+```
+
+Let's visualize the effect size using the function `plot`. 
+```{r fig.height = 6, fig.width = 6, fig.align = "center"}
+# smoothed average read counts for each group
+res.RNAseq.0  <- multiseq(x=OAS1$x[OAS1$g==0,], read.depth=OAS1$read.depth[OAS1$g==0])
+res.RNAseq.1  <- multiseq(x=OAS1$x[OAS1$g==1,], read.depth=OAS1$read.depth[OAS1$g==1])
+res.RNAseq.2  <- multiseq(x=OAS1$x[OAS1$g==2,], read.depth=OAS1$read.depth[OAS1$g==2])
+
+# visualize smoothed average read counts for each group, and the effect size using `plot` function.
+par(mfrow=c(4,1), oma = c(0,0,0,0) + 0.1, mar = c(2,2,1,2), mgp=c(0,1,0))
+res.RNAseq$region   <- OAS1$region
+res.RNAseq.0$region   <- OAS1$region
+res.RNAseq.1$region   <- OAS1$region
+res.RNAseq.2$region   <- OAS1$region
+M <- max(res.RNAseq.0$baseline.mean, res.RNAseq.1$baseline.mean, res.RNAseq.2$baseline.mean)
+m <- min(res.RNAseq.0$baseline.mean, res.RNAseq.1$baseline.mean, res.RNAseq.2$baseline.mean)
+ylim         <- exp(c(m,M))
+plot(res.RNAseq.0, what="baseline", main="(genotype AA)", ylim=ylim)
+plot(res.RNAseq.1, what="baseline", main="(genotype AG)", ylim=ylim)
+plot(res.RNAseq.2, what="baseline", main="(genotype GG)", ylim=ylim)
+plot(res.RNAseq, threshold=2.2)
+```
+
+
+## Session info
+
+This is the version of R and the packages that were used to generate
+the results shown above.
+
+```{r session-info}
+sessionInfo()
+```

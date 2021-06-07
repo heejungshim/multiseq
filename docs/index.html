@@ -13,7 +13,7 @@
 
 <meta name="date" content="2021-06-07" />
 
-<title>multiseq demo</title>
+<title>multiseq</title>
 
 
 
@@ -298,12 +298,12 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<h1 class="title toc-ignore">multiseq demo</h1>
+<h1 class="title toc-ignore">multiseq</h1>
 <h4 class="date">2021-06-07</h4>
 
 
 
-<p>The multiseq R package implements multiscale Poisson process approaches for differential or association analysis of high-throughput sequencing data. Key features that distinguishe multiseq from typical differential or association analysis is to 1) better exploit high-resolution information in the high-throughput sequencing data, and 2) directly model the count nature of the data (see Shim et al., 2021 for details of the motivations, approaches, and comparison results).</p>
+<p>The multiseq R package implements multiscale Poisson process approaches for differential or association analysis of high-throughput sequencing data. Key features that distinguish multiseq from typical differential or association analysis are to 1) better exploit high-resolution information in the high-throughput sequencing data, and 2) directly model the count nature of the data (see Shim et al., 2021 for details of the motivations, approaches, and comparison results).</p>
 <p>Assume that we have high-throughput sequencing data from <span class="math inline">\(N\)</span> samples across a genomic region divided into <span class="math inline">\(B\)</span> equal bins. Specifically, the data consist of the ``read counts&quot; in each sample that map to each bin. The choice of bin-width constitutes a trade-off between computation and resolution. For example, the highest possible resolution of analysis would be at the single base level: each bin would be of length 1bp. However, computation could be reduced – typically by a factor of &gt;10 – by using bins of length 10bp. Let <span class="math inline">\(x^{i}_b\)</span> denote the read count for sample <span class="math inline">\(i\)</span> in bin <span class="math inline">\(b\)</span>. We also assume that a covariate <span class="math inline">\(g^i\)</span> is measured on each sample <span class="math inline">\(i\)</span>. The covariate is either a binary group membership (for differential analysis) or continuous. We model the read counts as arising from an inhomogeneous Poisson process: <span class="math display">\[
 x^i_b \sim \text{Pois}(\lambda^i_b)
 \]</span> We use the multiseq methods to 1) estimate the effect of <span class="math inline">\(g\)</span> on <span class="math inline">\(\log\lambda_b\)</span> and 2) test for association (or difference for a binary <span class="math inline">\(g\)</span>) between <span class="math inline">\(g\)</span> and <span class="math inline">\(\log\lambda\)</span>. Here we present a brief demonstration of the methods.</p>
@@ -502,7 +502,7 @@ x^i_b \sim \text{Pois}(\lambda^i_b)
 <a class="sourceLine" id="cb17-20" data-line-number="20"><span class="co"># loaded via a namespace (and not attached):</span></a>
 <a class="sourceLine" id="cb17-21" data-line-number="21"><span class="co">#  [1] codetools_0.2-16  digest_0.6.25     foreach_1.5.1     truncnorm_1.0-8  </span></a>
 <a class="sourceLine" id="cb17-22" data-line-number="22"><span class="co">#  [5] MASS_7.3-51.6     magrittr_1.5      evaluate_0.14     highr_0.8        </span></a>
-<a class="sourceLine" id="cb17-23" data-line-number="23"><span class="co">#  [9] rlang_0.4.7       stringi_1.4.6     pscl_1.5.5        doParallel_1.0.16</span></a>
+<a class="sourceLine" id="cb17-23" data-line-number="23"><span class="co">#  [9] rlang_0.4.11      stringi_1.4.6     pscl_1.5.5        doParallel_1.0.16</span></a>
 <a class="sourceLine" id="cb17-24" data-line-number="24"><span class="co"># [13] rmarkdown_2.3     iterators_1.0.13  stringr_1.4.0     parallel_4.0.2   </span></a>
 <a class="sourceLine" id="cb17-25" data-line-number="25"><span class="co"># [17] xfun_0.15         yaml_2.2.1        compiler_4.0.2    SQUAREM_2021.1   </span></a>
 <a class="sourceLine" id="cb17-26" data-line-number="26"><span class="co"># [21] htmltools_0.5.0   knitr_1.29</span></a></code></pre></div>

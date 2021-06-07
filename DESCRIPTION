@@ -11,7 +11,7 @@ License: GPL (>= 3)
 Depends:
     R (>= 3.1.1),
     Rcpp (>= 0.10.4),
-    ashr,
+    ashr (1.0.12),
     tools,
     data.table
 VignetteBuilder: knitr

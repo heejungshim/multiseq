@@ -334,7 +334,7 @@ plot.multiseq <- function(x, is.xaxis=TRUE, threshold=2, what="effect", highligh
         if (!is.null(x$region)){
             axis(1,
                  at=seq(1,N,ceiling(N/5)),
-                 labels=format(seq(region$start,region$end,ceiling(N/5))/1000000, nsmall=3),
+                 labels=seq(region$start,region$end,ceiling(N/5)),
                  cex.lab=cex,
                  cex.axis=cex)
         }else
@@ -357,7 +357,7 @@ plot.multiseq <- function(x, is.xaxis=TRUE, threshold=2, what="effect", highligh
         points(ytop, type=type, col=col.sd)
         points(ybottom, type=type, col=col.sd)
     }
-
+    box()
 }
 
 #' @title Plot the output of \code{\link{multiseq}} (either the effect or the baseline).

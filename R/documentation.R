@@ -35,10 +35,10 @@ NULL
 #' @name chr17.10160989.10162012.DNase.seq
 NULL
 
-#' @title ATAC-seq data over chr1:111764939-111765962
+#' @title ATAC-seq data over chr1:568739-569762
 #' @description This is a subset of the data collected in an ATAC-seq experiment on 3 copper treated 
 #' samples and 3 control samples (Shim et al. 2021). Specifically, it consists of a matrix of counts 
-#' for 6 samples over a region of length 2^10 (chr1:111764939-111765962) where chromatin accessibility 
+#' for 6 samples over a region of length 2^10 (chr1:568739-569762) where chromatin accessibility 
 #' is differentially expressed between two conditions (see Figure 3 in Shim et al. 2021). 
 #' @docType data
 #' @keywords datasets
@@ -49,7 +49,7 @@ NULL
 #' a number indicating log likelihood ratio for overall expression obtained from DESeq2 output, 
 #' \code{overall.effect} a number indicating the effect size for overall expression obtained from DESeq2 output, 
 #' \code{overall.effect.var} a number indicating the variance of the effect size obtained from DESeq2 output.
-#' @name chr1.111764939.111765962.ATACseq
+#' @name chr1.568739.569762.ATACseq
 NULL
 
 #' @title Empirical distribution of the multiseq test statistic from ATAC-seq analysis in Shim et al, 2021. 

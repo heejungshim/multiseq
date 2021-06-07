@@ -28,7 +28,7 @@ paper:
 
 ## Dependency
 
-This package depends on [the ashr R package v1.0.12](https://github.com/stephens999/ashr/releases/tag/v1.0.12). In R, you can install the ashr v1.0.12 using
+This package depends on [the ashr R package v1.0.12](https://github.com/stephens999/ashr/releases/tag/v1.0.12). In R, you can install the ashr v1.0.12 using [devtools][devtools]:
 
    ```R
    install.packages("devtools")
@@ -48,14 +48,14 @@ Follow these steps to quickly get started using multiseq.
    install_github("heejungshim/multiseq")
    ```
 
-   This will build the smashr package *without* the vignettes. To
+   This will build the multiseq package *without* the vignettes. To
    build with the vignettes, do this instead:
 
    ```R
    install_github("heejungshim/multiseq",build_vignettes = TRUE)
    ```
    
-2. Load the smashr package:
+2. Load the multiseq package:
 
    ```R
    library(multiseq)

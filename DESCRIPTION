@@ -23,5 +23,5 @@ Suggests:
 LinkingTo: Rcpp
 NeedsCompilation: yes
 LazyData: true
-URL: https://github.com/stephenslab/multiseq
+URL: https://github.com/heejungshim/multiseq/
 RoxygenNote: 7.1.1.9001

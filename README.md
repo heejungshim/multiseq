@@ -1,12 +1,5 @@
 # multiseq: multiscale Poisson process approaches for differential or association analysis of high-throughput sequencing data
 
-This R package implements fast, wavelet-based Empirical Bayes
-shrinkage methods for signal denoising. This includes smoothing
-Poisson-distributed data and Gaussian-distributed data, with possibly
-heteroskedastic error. The algorithms implement the methods described
-in [Shim et al. (2021)][multiseq-arxiv].
-
-
 This R package implements multiscale Poisson process approaches for differential or association analysis of high-throughput sequencing data. Key features that distinguish the multiseq from typical differential or association analysis are to 1) better exploit high-resolution information in the high-throughput sequencing data, and 2) directly model the count nature of the data. See [Shim et al. (2021)][multiseq-arxiv] for the details of the motivations, approaches, and comparison with other methods. 
 
 If you find a bug, please post an [issue][issues].
@@ -35,7 +28,7 @@ paper:
 
 ## Dependency
 
-This package depends on [the ashr R package v1.0.12](https://github.com/stephens999/ashr/releases/tag/v1.0.12). In R, you can install the ashr v1.0.12 using
+This package depends on [the ashr R package v1.0.12](https://github.com/stephens999/ashr/releases/tag/v1.0.12). In R, you can install the ashr v1.0.12 using [devtools][devtools]:
 
    ```R
    install.packages("devtools")
@@ -55,14 +48,14 @@ Follow these steps to quickly get started using multiseq.
    install_github("heejungshim/multiseq")
    ```
 
-   This will build the smashr package *without* the vignettes. To
+   This will build the multiseq package *without* the vignettes. To
    build with the vignettes, do this instead:
 
    ```R
    install_github("heejungshim/multiseq",build_vignettes = TRUE)
    ```
    
-2. Load the smashr package:
+2. Load the multiseq package:
 
    ```R
    library(multiseq)

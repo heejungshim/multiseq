@@ -68,7 +68,7 @@ Follow these steps to quickly get started using multiseq.
    vignette("multiseq")
    ```
    
-[multiseq-arxiv]: XXX
+[multiseq-arxiv]: https://arxiv.org/abs/2106.13634
 [issues]: https://github.com/heejungshim/multiseq/issues
 [gpl]: http://www.gnu.org/licenses/gpl.html
 [fsf]: https://www.fsf.org

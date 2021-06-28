@@ -23,7 +23,7 @@ paper:
 > Heejung Shim, Zhengrong Xing, Ester Pantaleo, Francesca Luca, Roger 
 > Pique-Regi, and Matthew Stephens (2021). *Multi-scale Poisson process 
 > approaches for differential expression analysis of high-throughput 
-> sequencing data.* [Shim et al. (2021)][multiseq-arxiv].
+> sequencing data.* [Shim et al. (2021)](https://arxiv.org/abs/2106.13634).
 
 
 ## Dependency
